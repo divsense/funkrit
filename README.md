@@ -1,0 +1,2 @@
+# funkrit
+Functional programming language
