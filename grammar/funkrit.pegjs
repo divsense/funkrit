@@ -6,6 +6,7 @@
 //
 
 {
+
     function optionalList(value) {
         return value !== null ? value : [];
     }
@@ -22,9 +23,33 @@
         return [head].concat(extractList(tail, index));
     }
 
+    function buildListReversed(tail, head, index) {
+        return extractList(head, index).concat([tail])
+    }
+
     function extractPairs(list, a, b) {
         return list.map(function(el) { return [ el[a], el[b] ]; });
     }
+
+    //////////////////////////////////////////////////
+    function buildProgram(imports, body, exports) {
+        return extractList(imports, 1)
+                .concat(body[1])
+                .concat([exports])
+    }
+
+    function buildNamedExportList(head, tail, index) {
+        return buildList(head, tail, index).map(function(x){
+                    return {
+                      type: "ExportSpecifier",
+                      local: x,
+                      exported: x
+                    }
+                });
+    }
+
+    //////////////////////////////////////////////////
+
 
     function buildDotCall(list, loc) {
         return list.reduce(function(m, e){
@@ -129,15 +154,15 @@
 }
 
 /////////////////////////////////////////////
-
 Start
   = __ program:Program __ { return program; }
 
 Program
-  = body:SourceElements? {
+  = exports:ExportStatement imports:(__ ImportStatement)* body:(__ SourceElements)? {
       return {
         type: "Program",
-        body: optionalList(body)
+        body: buildProgram(imports, body, exports),
+        sourceType: 'module'
       };
     }
 
@@ -159,8 +184,6 @@ Statement
   / BreakStatement
   / ReturnStatement
   / SwitchStatement
-  / ExportStatement
-  / ImportStatement
 
 Block
   = "{" __ body:(StatementList __)? "}" {
@@ -304,21 +327,21 @@ DefaultClause
 ExportStatement
   = ExportToken _ head:Identifier tail:(__ "," __ Identifier)* {
       return {
-        type: "ReturnStatement",
-        argument: {
-            type: "ObjectPattern",
-            properties: buildExportList(head, tail, 3)
-        }
+        type: "ExportNamedDeclaration",
+        loc: location(),
+        declaration: null,
+        source: null,
+        specifiers: buildNamedExportList(head, tail, 3)
       };
   }
 
 ImportStatement
-  = "import" _ url:StringLiteral __ "!{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
+  = "import" _ url:StringLiteral __ "but" __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
 		specifiers: buildList(head, tail, 3),
-        exclusive: true
+        funkrit: {ImportMode: 'exclusive'}
     }
   }
   / "import" _ url:StringLiteral __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
@@ -332,6 +355,7 @@ ImportStatement
 	return {
 		type: "ImportDeclaration",
 		source: url,
+        funkrit: {ImportMode: 'full'}
     }
   }
 
@@ -346,7 +370,8 @@ ImportSpec
   / id:Identifier {
 	return {
 		type: "ImportSpecifier",
-        imported: id
+        imported: id,
+		local: id
     }
   }
 
@@ -496,22 +521,20 @@ UnaryOperator
   / "!"
 
 CallExpression
-  = head:(
-      callee:CalleeExpression __ args:Arguments {
-        return { type: "CallExpression", callee: callee, arguments: args };
-      }
-    )
-    tail:(
-        __ args:Arguments {
-          return { type: "CallExpression", arguments: args };
-        }
-    )*
+    = head: (CalleeHead / CalleeExpression) __ '$' __ arg: Argument {
+        return { type: "CallExpression", callee: head, arguments: [arg] };
+    }
+    / head: CalleeHead tail:( __ args:Arguments { return { type: "CallExpression", arguments: args }; })*
     {
       return tail.reduce(function(result, element) {
         element.callee = result;
         return element;
       }, head);
     }
+
+CalleeHead = callee:CalleeExpression __ args:Arguments {
+    return { type: "CallExpression", callee: callee, arguments: args };
+  }
 
 Arguments
     = "()" { return [] }

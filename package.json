@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "acorn": "acorn",
-    "generate-parser": "pegjs -o index.js grammar.pegjs"
+    "parse": "pegjs -o src/peg.js grammar/funkrit.pegjs"
   },
   "repository": {
     "type": "git",
@@ -14,8 +13,7 @@
   },
   "keywords": [
     "funkrit",
-    "funcional",
-    "programming language"
+    "functional programming language"
   ],
   "author": "Oleg Kirichenko",
   "license": "MIT",
@@ -27,6 +25,8 @@
     "acorn": "^5.5.3",
     "astring": "^1.2.0",
     "chai": "^4.1.2",
+    "minimist": "^1.2.0",
+    "minimist-options": "^3.0.2",
     "mocha": "^5.0.5",
     "pegjs": "^0.10.0"
   },
