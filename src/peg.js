@@ -284,7 +284,7 @@ function peg$parse(input, options) {
       		type: "ImportDeclaration",
       		source: url,
       		specifiers: buildList(head, tail, 3),
-              funkrit: {ImportMode: 'exclusive'}
+              funkrit: {importMode: 'Exclusive'}
           }
         },
       peg$c44 = function(url, head, tail) {
@@ -298,7 +298,8 @@ function peg$parse(input, options) {
       	return {
       		type: "ImportDeclaration",
       		source: url,
-              funkrit: {ImportMode: 'full'}
+      		specifiers: [],
+              funkrit: {importMode: 'Full'}
           }
         },
       peg$c46 = "as",

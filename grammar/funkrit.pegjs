@@ -341,7 +341,7 @@ ImportStatement
 		type: "ImportDeclaration",
 		source: url,
 		specifiers: buildList(head, tail, 3),
-        funkrit: {ImportMode: 'exclusive'}
+        funkrit: {importMode: 'Exclusive'}
     }
   }
   / "import" _ url:StringLiteral __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
@@ -355,7 +355,8 @@ ImportStatement
 	return {
 		type: "ImportDeclaration",
 		source: url,
-        funkrit: {ImportMode: 'full'}
+		specifiers: [],
+        funkrit: {importMode: 'Full'}
     }
   }
 
