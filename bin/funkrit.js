@@ -3,16 +3,15 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 01.12.2018
- * Last Modified Date: 09.12.2018
+ * Last Modified Date: 10.12.2018
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
-const { compose, map, flatten } = require('ramda')
+const { compose, append, keys, map, flatten } = require('ramda')
 const fs = require('fs')
 const path = require('path')
 const buildOptions = require('minimist-options')
 const minimist = require('minimist')
 const parse = require('../src/parse.js')
-//const resolveImports = require('../src/resolve-imports.js')
 const { generate } = require('astring')
 
 const options = buildOptions({
@@ -24,7 +23,11 @@ const options = buildOptions({
         type: 'boolean',
         alias: ['a']
     },
-    import: {
+    ramda: {
+        type: 'boolean',
+        default: true
+    },
+    implicit: {
         type: 'string',
         alias: ['i']
     },
@@ -39,40 +42,46 @@ if(!args._.length || args.help) {
     console.log('Usage:')
     console.log('npm run funkrit [options] <source>')
     console.log('  [-a, --ast]      : generate AST only')
-    console.log('  [-i, --implicit] : implicit import')
+    console.log('  [--no-ramda]     : exclude ramda')
     console.log('  [-e, --epath]    : path to embedded libraries')
     console.log('  [-o, --output]   : output path')
     console.log('  <source>         : path to funkrit source file (if equals to "-" then read from STDIN)')
     return
 }
 
-const implicitLibs = !args.i ? [] : Array.isArray(args.i) ? args.i : [args.i] 
-const es = !args.e ? [] : Array.isArray(args.e) ? args.e : [args.e] 
-
 const resolveEmbeddedLibs = compose(flatten, map( x => {
     const abspath = path.resolve(x)
     return fs.readdirSync(abspath).map(p => {
         const libPath = abspath + '/' + p
         const libName = path.basename(p, '.js')
-        const names = require(libPath).names
+        const names = keys(require(libPath))
 
         return { libName, libPath, names }
     })
 }))
 
+const addRamda = (needRamda, libs) => {
+    if(!needRamda) {
+        return libs
+    }
+    const libName = 'ramda'
+    const libPath = 'ramda'
+    const names = keys(require('ramda')) || []
+    return append({ libName, libPath, names }, libs)
+}
+
 try {
     const input = args._[0]
     const insrc = input === '-' ? '/dev/stdin' : input
     const source = fs.readFileSync(insrc).toString()
-    const embeddedLibs = resolveEmbeddedLibs(es)
 
-    //console.log(embeddeds)
+    const es = !args.e ? [] : Array.isArray(args.e) ? args.e : [args.e]
+
+    const embeddedLibs = addRamda(args.ramda, resolveEmbeddedLibs(es))
 
     //console.log(source)
 
-    const ast = parse({implicitLibs, embeddedLibs})(source)
-
-    //return
+    const ast = parse({embeddedLibs, needRamda: args.ramda})(source)
 
     if(args.ast) {
         if(args.output) {
@@ -89,7 +98,6 @@ try {
 }
 catch(err) {
     console.log('Error:', err)
-    //console.log('Error:', err.message)
 }
 
 function resolvePath(p) {

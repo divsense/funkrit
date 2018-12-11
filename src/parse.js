@@ -3,10 +3,10 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 01.12.2018
- * Last Modified Date: 09.12.2018
+ * Last Modified Date: 10.12.2018
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
-const { objOf, over, concat, lensProp, nth, indexOf, always, filter, map, compose, prop, path, propEq, find, assoc } = require('ramda')
+const { objOf, not, any, both, pathEq, prepend, over, concat, lensProp, nth, indexOf, always, filter, map, compose, prop, path, propEq, find, assoc } = require('ramda')
 const peg = require('./peg.js')
 const {resolveFullImports, resolveExclusiveImports} = require('./resolve-import-mode.js')
 
@@ -47,8 +47,8 @@ const exclusiveImports = updateImports(specs => x => {
     }
 })
 
-// toFullImport :: String -> ImportDeclaration
-const toFullImport = name => ({
+// fullImport :: String -> ImportDeclaration
+const fullImport = name => ({
     type: "ImportDeclaration",
     source: {
         type: 'Literal',
@@ -58,8 +58,15 @@ const toFullImport = name => ({
     funkrit: {importMode: 'Full'}
 })
 
-// addImplicitImports :: [ImplicitLib] -> AST -> AST
-const addImplicitImports = impLibs => over(lensProp('body'), concat(map(toFullImport, impLibs)))
+// addRamdaImport :: AST -> AST
+const addRamdaImport = over(lensProp('body'), prepend(fullImport('ramda')))
+
+//noExplicitRamdaImport :: AST -> Bool
+const noExplicitRamdaImport = compose(
+    not,
+    any(both(propEq('type', 'ImportDeclaration'), pathEq(['source', 'value'], 'ramda'))),
+    prop('body')
+)
 
 // parse :: Options -> String -> AST
 // Options ::
@@ -67,10 +74,10 @@ const addImplicitImports = impLibs => over(lensProp('body'), concat(map(toFullIm
 //     lib :: String
 //     names :: [String]
 //
-module.exports = ({embeddedLibs, implicitLibs}) => compose(
+module.exports = ({embeddedLibs, needRamda}) => compose(
     resolveExclusiveImports(exclusiveImports(embeddedLibs)),
     resolveFullImports(fullImports(embeddedLibs)),
-    addImplicitImports(implicitLibs),
+    x => noExplicitRamdaImport(x) && needRamda ? addRamdaImport(x) : x,
     peg.parse)
 
 
