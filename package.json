@@ -1,11 +1,12 @@
 {
   "name": "funkrit",
-  "version": "0.4.0",
+  "version": "0.0.1",
   "description": "Funkrit. Functional Programming Language",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "parse": "pegjs -o src/peg.js grammar/funkrit.pegjs"
+    "parse": "pegjs -o build/peg.js grammar/funkrit.pegjs",
+    "webpack": "webpack-cli"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,9 @@
     "minimist-options": "^3.0.2",
     "mocha": "^5.0.5",
     "pegjs": "^0.10.0",
-    "ramda": "^0.26.1"
+    "ramda": "^0.26.1",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2"
   },
   "dependencies": {}
 }

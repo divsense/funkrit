@@ -31,7 +31,6 @@
         return list.map(function(el) { return [ el[a], el[b] ]; });
     }
 
-    //////////////////////////////////////////////////
     function buildProgram(imports, body, exports) {
         return extractList(imports, 1)
                 .concat(body[1])
@@ -48,8 +47,16 @@
                 });
     }
 
-    //////////////////////////////////////////////////
+    function buildDoStatements(head, body, tail) {
 
+        return buildList(head, body, 1)
+                .concat([
+                    {
+                        type: "ReturnStatement",
+                        argument: extractOptional(tail,1)
+                    }
+                ])
+    }
 
     function buildDotCall(list, loc) {
         return list.reduce(function(m, e){
@@ -202,7 +209,7 @@ EmptyStatement
   = ";" { return { type: "EmptyStatement" }; }
 
 FunctionDeclarationStatement
-  = id:Identifier __ "=" __ params:ArrowFunctionParameters __ ArrowToken __ body:FunctionBody {
+  = type:(TypeAnnotation)? id:Identifier __ "=" __ params:ArrowFunctionParameters __ ArrowToken __ body:FunctionBody {
       return {
         type: "FunctionDeclaration",
         id: id,
@@ -230,6 +237,11 @@ Declaration
         init: extractOptional(init, 1)
       };
     }
+
+TypeAnnotation
+  = Identifier WhiteSpace* "::" WhiteSpace* (!LineTerminator SourceCharacter)+ EOS {
+    return { type: "EmptyStatement" }
+  }
 
 ExpressionStatement
   = !("{" / ArrowToken) expression:SingleExpression EOS {
@@ -401,17 +413,10 @@ DotCompositionExpression
     }
 
 DotWrapCompositionExpression
-  = head:PromiseCompositionExpression
-    tail:(__ DotWrapCompositionToken __ PromiseCompositionExpression)*
+  = head:MonadCompositionExpression
+    tail:(__ DotWrapCompositionToken __ MonadCompositionExpression)*
     {
         return !tail.length ? head : buildDotCompositionExpression(head, buildDotWrapCall(extractPairs(tail, 1, 3), location()));
-    }
-
-PromiseCompositionExpression
-  = head:MonadCompositionExpression
-    tail:(__ PromiseCompositionToken __ MonadCompositionExpression)*
-    { 
-        return !tail.length ? head : buildCompositionExpression(head, extractList(tail, 3), "composeP");
     }
 
 MonadCompositionExpression
@@ -472,7 +477,7 @@ RelationalExpression
 RelationalOperator
   = "<="
   / ">="
-  / $("<" !"<")
+  / $(!"<" "<" !"-")
   / $(!"-" ">" !">")
 
 ShiftExpression
@@ -504,7 +509,8 @@ MultiplicativeOperator
   / $("%" !"=")
 
 UnaryExpression
-  = CallExpression
+  = DoMonadExpression
+  / CallExpression
   / PrimaryExpression
   / operator:UnaryOperator __ argument:UnaryExpression {
       return {
@@ -520,6 +526,65 @@ UnaryOperator
   / $("-" !"=")
   / "~"
   / "!"
+
+DoMonadExpression
+  = DoMonadToken __ "{" __ body:(DoMonadExpressionList __)? "}" {
+      return extractOptional(body, 0)
+  }
+  / body:DoMonadExpressionList {
+     return {
+        type: "ReturnStatement",
+        argument: body
+    }
+  }
+
+DoMonadExpressionList
+  = head:DoArrowExpression body:(__ DoExpressions) {
+      return { 
+            type: "CallExpression",
+            callee: head.callee,
+            arguments: [
+                {
+                  type: "ArrowFunctionExpression",
+                  generator: false,
+                  expression: true,
+                  params: head.arg,
+                  body: body[1]
+                }
+            ]
+      };
+}
+
+DoExpressions
+ = DoMonadExpressionList
+ / head:Statement body:(__ Statement)* tail:(__ DoMonadExpressionList) {
+    return {
+        type: "BlockStatement",
+        body: buildDoStatements(head, body, tail)
+    }
+ }  
+ / head:Statement body:(__ Statement)* {
+    return {
+        type: "BlockStatement",
+          body: buildList(head, body, 1)
+    }
+ }  
+
+DoArrowExpression
+  = arg:ArrowFunctionParameters __ DoArrowToken __ expr: SingleExpression {
+      return {
+        arg: arg,
+        callee:{
+                type: "MemberExpression",
+                object: expr,
+                property: {
+                  type: "Identifier",
+                  name: "chain"
+                },
+                computed: false
+          }
+        }
+  }
 
 CallExpression
     = head: (CalleeHead / CalleeExpression) __ '$' __ arg: Argument {
@@ -844,6 +909,7 @@ Keyword
   / IfToken
   / ReturnToken
   / SwitchToken
+  / DoMonadToken
 
 Literal
   = NullLiteral
@@ -1071,6 +1137,7 @@ NullToken       = "null"       !IdentifierPart
 ReturnToken     = "return"     !IdentifierPart
 SwitchToken     = "switch"     !IdentifierPart
 TrueToken       = "true"       !IdentifierPart
+DoMonadToken    = "do"         !IdentifierPart
 
 EllipsisToken   = "..."
 ArrowToken      = "->"
@@ -1079,12 +1146,10 @@ BindToken       = ">>="
 ConcatToken     = "++"
 ApplyToken      = "<*>"
 AltToken        = "<|>"
-ThenToken       = ">>>"
-CatchToken      = "!>>"
+DoArrowToken    = "<-"
 
 FunctionCompositionToken = $(![0-9] "." ![0-9])
 MonadCompositionToken    = "<=<"
-PromiseCompositionToken  = "<<>"
 
 DotWrapCompositionToken
     = JoinToken { return "chain" }
@@ -1094,9 +1159,6 @@ DotWrapCompositionToken
 DotCompositionToken
     = ConcatToken { return "concat" }
     / BindToken { return "chain" }
-    / ThenToken { return "then" }
-    / CatchToken { return "catch" }
-
 
 //////////////////////////////////////////////
 
