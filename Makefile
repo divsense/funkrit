@@ -5,7 +5,7 @@ vpath %.pegjs grammar
 vpath %.fnk src
 vpath %.fnk examples
 
-all: node examples temp
+all: node examples #temp
 
 node: build/funkrit-node.js
 
@@ -21,9 +21,11 @@ build/peg-parser.js: funkrit.pegjs
 build/funkrit-import-mode.js: funkrit-import-mode.fnk
 	node ./bin/funkrit-node.js -e libs $< > $@
 
+# Examples
+
 examples: examples/build/monads.js examples/build/monads.ast
 
-examples/build/monads.js: monads.fnk
+examples/build/monads.js: monads.fnk build/peg-parser.js
 	node ./bin/funkrit-node.js -e libs $< > $@
 
 examples/build/monads.ast: monads.fnk
