@@ -1,0 +1,57 @@
+export Right, Left, isRight, isLeft, right, left,
+       EitherT
+
+checkForNil :: Either(x, y) -> Either(x, y)
+checkForNil = when(isNil . prop('right'), always $ Left('null'))
+
+checkForInfinity :: Either(x, y) -> Either(x, y)
+checkForInfinity = when(propEq('right', Infinity), always $ Left('Infinity'))
+
+checkForException :: Either(x, y) -> Either(x, y)
+checkForException = unless(has('left'), checkForInfinity . checkForNil)
+
+safeMap :: (a -> Either(x, b)) -> b -> Either(x, b)
+safeMap = f -> checkForException . tryCatch(f, Left)
+
+Right :: a -> Right(a)
+Right = right -> ({
+    right,
+
+    run: () -> right,
+
+    // map :: Right(a) ~> (a -> b) -> Either(x, b)
+    map: f -> safeMap(Right . f) $ right,
+
+    // chain :: Right(a) ~> (a -> Either(x, b)) -> Either(x, b)
+    chain: f -> safeMap(f) $ right
+})
+
+Left :: a -> Left(a)
+Left = left -> ({
+    left,
+    map: _ -> Left $ left,
+    chain: _ -> Left $ left
+})
+
+isRight = has('right')
+isLeft = has('left')
+right = prop('right')
+left = prop('left')
+
+// EitherT
+
+pureOf = m -> prop('pure', m)
+
+EitherT :: m (Either a) -> EitherT m (Either a)
+EitherT = monad -> ({
+    monad,
+
+    // ap :: (a -> )
+
+    // map :: (a -> b) -> EitherT
+    map: f -> EitherT $ map(map(f), monad),
+
+    // chain :: (a -> EitherT) -> EitherT
+    chain: f -> EitherT $ monad >>= ifElse(isLeft, pureOf(monad), prop('monad') . f . right)
+})
+

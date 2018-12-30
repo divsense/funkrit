@@ -1,0 +1,16 @@
+export pureIO, runIO, IO
+
+IO :: Eff(a) -> IO(a)
+IO = run -> ({
+    run,
+    pure: pureIO,
+    map: f -> IO $ f . run,
+    chain: f -> IO $ runIO . f . run
+})
+
+pureIO :: a -> IO(a)
+pureIO = a -> IO $ () -> a
+
+runIO :: IO -> a
+runIO = call . prop('run')
+

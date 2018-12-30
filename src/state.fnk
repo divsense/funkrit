@@ -1,0 +1,32 @@
+export State, pureState, StateT
+
+vIndex = lensIndex(0)
+sIndex = lensIndex(1)
+
+convergeState = f -> converge(call, [prop('run') . f . nth(0), nth(1)])
+
+State :: (s -> [a, s]) -> State (a, s)
+State = run -> ({
+    run,
+
+    // map :: State (a, s) ~> (a -> b) -> State (b, s)
+    map: f -> State $ over(vIndex, f) . run,
+
+    // chain :: State (a, s) ~> (a -> State (b, s)) -> State (b, s)
+    chain: f -> State $ convergeState(f) . run
+})
+
+pureState = a -> State $ s -> [a, s]
+readState = 14
+
+StateT :: (s -> m [a, s]) -> StateT m [a, s]
+StateT = run -> ({
+    run,
+
+    // map :: StateT m (a, s) ~> (a -> b) -> StateT m (b, s)
+    map: f -> StateT $ map(over(vIndex, f)) . run,
+
+    // chain :: State (a, s) ~> (a -> StateT m [b, s]) -> StateT m [b, s]
+    chain: f -> StateT $ s -> run(s) >>= convergeState(f)
+})
+
