@@ -1,5 +1,5 @@
 export Right, Left, isRight, isLeft, right, left,
-       EitherT
+       EitherT, runEitherT, liftRight, liftLeft
 
 checkForNil :: Either(x, y) -> Either(x, y)
 checkForNil = when(isNil . prop('right'), always $ Left('null'))
@@ -46,12 +46,20 @@ EitherT :: m (Either a) -> EitherT m (Either a)
 EitherT = monad -> ({
     monad,
 
-    // ap :: (a -> )
-
     // map :: (a -> b) -> EitherT
     map: f -> EitherT $ map(map(f), monad),
 
     // chain :: (a -> EitherT) -> EitherT
     chain: f -> EitherT $ monad >>= ifElse(isLeft, pureOf(monad), prop('monad') . f . right)
 })
+
+runEitherT :: EitherT m a -> a
+runEitherT = call . prop('run') . prop('monad')
+
+liftRight :: m a -> EitherT m a
+liftRight = EitherT . map(Right)
+
+liftLeft :: m a -> EitherT m a
+liftLeft = EitherT . map(Left)
+
 

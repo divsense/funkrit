@@ -1,23 +1,21 @@
 BUILDDIR := build
-OBJS := $(addprefix $(BUILDDIR)/, peg-parser.js io.js state.js either.js either-pio.js get-ast.js)
+OBJS := $(addprefix $(BUILDDIR)/, peg-parser.js io.js state.js either.js either-pio.js reader-either-pio.js )
 
 BUILDTESTDIR := build/test
-TESTS := $(addprefix $(BUILDTESTDIR)/, io.js state.js reader.js either.js either-pio.js)
+TESTS := $(addprefix $(BUILDTESTDIR)/, io.js state.js reader.js either.js either-pio.js reader-either-pio.js )
 
 vpath %.pegjs grammar
 vpath %.fnk src
 vpath %.fnk examples
 
-all: node examples #temp
+all: $(OBJS) #node examples temp
 
 test: $(TESTS)
 	npm test
 
 node: build/funkrit-node.js
 
-build/funkrit-node.js: webpack.config.js $(OBJS)
-	./node_modules/.bin/webpack --config $<
-
+# Libs
 build/io.js: io.fnk
 	node ./bin/funkrit-node.js $< > $@
 
@@ -33,11 +31,19 @@ build/either.js: either.fnk
 build/either-pio.js: either-pio.fnk
 	node ./bin/funkrit-node.js $< > $@
 
-build/get-ast.js: get-ast.fnk build/peg-parser.js #build/funkrit-import-mode.js
-	node ./bin/funkrit-node.js -e libs $< > $@
+build/reader-either-pio.js: reader-either-pio.fnk
+	node ./bin/funkrit-node.js $< > $@
 
+# Parser
 build/peg-parser.js: funkrit.pegjs
 	./node_modules/.bin/pegjs -o $@ $<
+
+# Builder
+build/funkrit-node.js: webpack.config.js $(OBJS)
+	./node_modules/.bin/webpack --config $@
+
+build/get-ast.js: get-ast.fnk build/peg-parser.js #build/funkrit-import-mode.js
+	node ./bin/funkrit-node.js -e libs $< > $@
 
 build/funkrit-import-mode.js: funkrit-import-mode.fnk
 	node ./bin/funkrit-node.js -e libs $< > $@
@@ -52,10 +58,13 @@ build/test/reader.js: build/reader.js
 build/test/state.js: build/state.js
 	./node_modules/.bin/webpack --config webpack.test.config.js $< -o $@
 
+build/test/either.js: build/either.js
+	./node_modules/.bin/webpack --config webpack.test.config.js $< -o $@
+
 build/test/either-pio.js: build/either-pio.js
 	./node_modules/.bin/webpack --config webpack.test.config.js $< -o $@
 
-build/test/either.js: build/either.js
+build/test/reader-either-pio.js: build/reader-either-pio.js
 	./node_modules/.bin/webpack --config webpack.test.config.js $< -o $@
 
 # Examples
@@ -81,6 +90,7 @@ temp/test.ast: temp/test.js
 
 
 clean:
-	- rm build/*
+	- rm build/*.js
+	- rm build/test/*.js
 
 .PHONY = all node clean temp test

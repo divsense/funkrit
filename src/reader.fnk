@@ -1,4 +1,4 @@
-export Reader, pureReader, ask, ReaderT, askT
+export Reader, pureReader, ask, ReaderT, askT, liftReaderT
 
 Reader :: (r -> a) -> Reader a
 Reader = run -> ({
@@ -20,13 +20,19 @@ ReaderT = run -> ({
 
     run,
 
+    // lift :: m a -> ReaderT m a
+    lift: ReaderT . always,
+
     // map :: (a -> b) -> ReaderT m b
     map: f -> ReaderT $ map(f) . run,
 
     // chain :: (a -> ReaderT m b) -> ReaderT m b
-    chain: f -> ReaderT $ r -> run(r) >>= x -> prop('run', f(x)) $ r
+    chain: f -> ReaderT $ r -> run(r) >>= a -> prop('run', f(a)) $ r
 })
 
 askT :: (a -> m a) -> ReaderT m r
-askT = m -> ReaderT $ m
+askT = pureM -> ReaderT $ r -> pureM(r)
+
+liftReaderT :: m a -> ReaderT m a
+liftReaderT = ReaderT . always
 

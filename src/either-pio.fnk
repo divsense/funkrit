@@ -1,4 +1,4 @@
-export RightPIO, LeftPIO, runEitherPIO
+export RightPIO, LeftPIO
 
 import 'pio' { purePIO }
 import 'either' { Right, Left, EitherT }
@@ -8,8 +8,3 @@ RightPIO = EitherT . purePIO . Right
 
 LeftPIO :: a -> EitherT PIO Either a
 LeftPIO = EitherT . purePIO . Left
-
-runEitherPIO :: EitherT m a -> m a
-runEitherPIO = call . prop('run') . prop('monad')
-
-

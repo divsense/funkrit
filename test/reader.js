@@ -3,7 +3,7 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 26.12.2018
- * Last Modified Date: 29.12.2018
+ * Last Modified Date: 30.12.2018
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 import test from 'ava'
@@ -46,11 +46,15 @@ test('ReaderT :: map', t => {
 test('ReaderT :: chain', t => {
     const r1 = ReaderT( r => Right(2) )
     const r2 = r1.chain(x => askT(Right))
+    const r3 = r2.chain(x => ReaderT(r => Right(x + 3)))
 
     const ma1 = r1.run(0)
     const ma2 = r2.run(199)
+    const ma3 = r3.run(399)
 
     t.is(isRight(ma1), true)
     t.is(isRight(ma2), true)
+    t.is(isRight(ma3), true)
     t.is(right(ma2), 199)
+    t.is(right(ma3), 402)
 })
