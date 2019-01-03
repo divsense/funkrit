@@ -3,7 +3,7 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 15.12.2018
- * Last Modified Date: 30.12.2018
+ * Last Modified Date: 02.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 var path = require('path')

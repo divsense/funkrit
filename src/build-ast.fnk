@@ -1,0 +1,27 @@
+export build
+//use 'ramda'
+//use 'funkrit/libs/math'
+
+import 'peg-parser' { parse as pegParse }
+import 'pio' { purePIO, mapAll }
+import 'pio-node' { readExportedNames }
+import 'reader-either-pio' { liftPIO, pureRepio }
+import 'ast' { getUses, getLocalIdentifiers }
+
+sourceValue :: {source::{value::String}} -> String
+sourceValue = path $ ['source', 'value']
+
+build :: String -> Repio(AST)
+build = str -> {
+
+    ast <- map(pegParse, pureRepio(str))
+
+    uses = getUses $ ast
+    idents = getLocalIdentifiers $ ast
+
+    jss <- liftPIO $ mapAll(readExportedNames) $ map(sourceValue, uses)
+
+
+    return pureRepio $ jss
+}
+

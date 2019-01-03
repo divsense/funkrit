@@ -31,8 +31,9 @@
         return list.map(function(el) { return [ el[a], el[b] ]; });
     }
 
-    function buildProgram(imports, body, exports) {
-        return extractList(imports, 1)
+    function buildProgram(uses, imports, body, exports) {
+        return extractList(uses, 1)
+                .concat(extractList(imports, 1))
                 .concat(body[1])
                 .concat([exports])
     }
@@ -180,10 +181,13 @@ Start
   = __ program:Program __ { return program; }
 
 Program
-  = exports:ExportStatement imports:(__ ImportStatement)* body:(__ SourceElements)? {
+  = exports:ExportStatement
+    uses:(__ UseStatement)*
+    imports:(__ ImportStatement)*
+    body:(__ SourceElements)? {
       return {
         type: "Program",
-        body: buildProgram(imports, body, exports),
+        body: buildProgram(uses, imports, body, exports),
         sourceType: 'module'
       };
     }
@@ -369,28 +373,30 @@ ExportStatement
       };
   }
 
-ImportStatement
-  = "import" _ url:StringLiteral __ "but" __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
+UseStatement
+  = "use" _ url:StringLiteral __ "but" __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
 		specifiers: buildList(head, tail, 3),
-        funkrit: {importMode: 'Exclusive'}
+        funkrit: {use: 'Exclusive'}
     }
   }
-  / "import" _ url:StringLiteral __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
-	return {
-		type: "ImportDeclaration",
-		source: url,
-		specifiers: buildList(head, tail, 3)
-    }
-  }
-  / "import" _ url:StringLiteral EOS {
+  / "use" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
 		specifiers: [],
-        funkrit: {importMode: 'Full'}
+        funkrit: {use: 'Full'}
+    }
+  }
+
+ImportStatement
+  = "import" _ url:StringLiteral __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
+	return {
+		type: "ImportDeclaration",
+		source: url,
+		specifiers: buildList(head, tail, 3)
     }
   }
 

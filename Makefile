@@ -1,19 +1,24 @@
 BUILDDIR := build
-OBJS := $(addprefix $(BUILDDIR)/, peg-parser.js io.js state.js either.js either-pio.js reader-either-pio.js )
+OBJS := $(addprefix $(BUILDDIR)/, peg-parser.js build-ast.js io.js state.js reader.js either.js either-pio.js reader-either-pio.js )
 
 BUILDTESTDIR := build/test
-TESTS := $(addprefix $(BUILDTESTDIR)/, io.js state.js reader.js either.js either-pio.js reader-either-pio.js )
+TESTS := $(addprefix $(BUILDTESTDIR)/, build-ast.js io.js state.js reader.js either.js either-pio.js reader-either-pio.js )
+
+BUILDEXMPLDIR := examples/build
+EXAMPLES := $(addprefix $(BUILDEXMPLDIR)/, monads.js use.js )
 
 vpath %.pegjs grammar
 vpath %.fnk src
 vpath %.fnk examples
 
-all: $(OBJS) #node examples temp
+all: $(OBJS) examples temp
 
 test: $(TESTS)
 	npm test
 
 node: build/funkrit-node.js
+
+parser: build/peg-parser.js
 
 # Libs
 build/io.js: io.fnk
@@ -42,13 +47,16 @@ build/peg-parser.js: funkrit.pegjs
 build/funkrit-node.js: webpack.config.js $(OBJS)
 	./node_modules/.bin/webpack --config $@
 
-build/get-ast.js: get-ast.fnk build/peg-parser.js #build/funkrit-import-mode.js
+build/build-ast.js: build-ast.fnk build/peg-parser.js #build/funkrit-import-mode.js
 	node ./bin/funkrit-node.js -e libs $< > $@
 
 build/funkrit-import-mode.js: funkrit-import-mode.fnk
 	node ./bin/funkrit-node.js -e libs $< > $@
 
 # Tests
+build/test/build-ast.js: build/build-ast.js
+	./node_modules/.bin/webpack --config webpack.test.config.js $< -o $@
+
 build/test/io.js: build/io.js
 	./node_modules/.bin/webpack --config webpack.test.config.js $< -o $@
 
@@ -69,12 +77,18 @@ build/test/reader-either-pio.js: build/reader-either-pio.js
 
 # Examples
 
-examples: examples/build/monads.js examples/build/monads.ast
+examples: $(EXAMPLES) build/peg-parser.js
 
-examples/build/monads.js: monads.fnk build/peg-parser.js
+examples/build/monads.js: examples/build/monads.ast
 	node ./bin/funkrit-node.js -e libs $< > $@
 
 examples/build/monads.ast: monads.fnk
+	node ./bin/funkrit-node.js --ast -e libs $< > $@
+
+examples/build/use.js: examples/build/use.ast
+	node ./bin/funkrit-node.js -e libs $< > $@
+
+examples/build/use.ast: use.fnk
 	node ./bin/funkrit-node.js --ast -e libs $< > $@
 
 temp: temp/play.js temp/play.ast temp/test.ast
@@ -93,4 +107,5 @@ clean:
 	- rm build/*.js
 	- rm build/test/*.js
 
-.PHONY = all node clean temp test
+.PHONY = all node clean temp test examples parser
+

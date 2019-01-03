@@ -3,7 +3,7 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 28.12.2018
- * Last Modified Date: 29.12.2018
+ * Last Modified Date: 01.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  *
  * Promise based IO Monad
@@ -23,6 +23,20 @@ function PIO(run) {
   }
 }
 
+// mapAll :: (a -> PIO b) -> [a] -> PIO [b]
+function mapAll(f) {
+    return function(xs) {
+        return PIO(() => Promise.all(xs.map(x => f(x).run())))
+    }
+}
+
+// mapRace :: (a -> PIO b) -> [a] -> PIO b
+function mapRace(f) {
+    return function(xs) {
+        return PIO(() => Promise.race(xs.map(x => f(x).run())))
+    }
+}
+
 function purePIO(a) {
   return PIO(() => Promise.resolve(a));
 }
@@ -31,6 +45,8 @@ function failPIO(a) {
   return PIO(() => Promise.reject(a));
 }
 
+exports.mapAll = mapAll
+exports.mapRace = mapRace
 exports.purePIO = purePIO
 exports.failPIO = failPIO
 exports.PIO = PIO
