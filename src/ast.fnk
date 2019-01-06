@@ -1,7 +1,0 @@
-export getUses
-
-getUses ::  AST -> [{String : [{imported::String, local::String}]}]
-getUses = filter(has('funkrit')) . filter(propEq('type', 'ImportDeclaration')) . prop('body')
-
-getLocalDeclarations :: AST -> [String]
-getLocalDeclarations = 

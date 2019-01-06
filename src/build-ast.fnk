@@ -4,9 +4,9 @@ export build
 
 import 'peg-parser' { parse as pegParse }
 import 'pio' { purePIO, mapAll }
-import 'pio-node' { readExportedNames }
+import 'node-utils-pio' { readExportedNames }
 import 'reader-either-pio' { liftPIO, pureRepio }
-import 'ast' { getUses, getLocalIdentifiers }
+import 'ast-utils' { getFunkritUseImports, updateFunkritUseImports }
 
 sourceValue :: {source::{value::String}} -> String
 sourceValue = path $ ['source', 'value']
@@ -16,12 +16,11 @@ build = str -> {
 
     ast <- map(pegParse, pureRepio(str))
 
-    uses = getUses $ ast
-    idents = getLocalIdentifiers $ ast
+    uses = getFunkritUseImports(ast)
+    /*idents = getLocalIdentifiers $ ast*/
 
-    jss <- liftPIO $ mapAll(readExportedNames) $ map(sourceValue, uses)
+    exports <- liftPIO $ mapAll(readExportedNames) $ map(sourceValue, uses) // exports = [{url::String, exports::[String]}]
 
-
-    return pureRepio $ jss
+    return pureRepio $ reduce(updateFunkritUseImports, ast, exports)
 }
 

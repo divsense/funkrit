@@ -1,0 +1,100 @@
+export getFunkritUseImports, updateFunkritUseImports
+
+/*
+
+Types aliases
+-------------
+
+Identifier :: {
+  type :: "Identifier",
+  name :: String
+}
+
+ImportSpec :: {
+  type :: "ImportSpecifier",
+  imported :: Identifier,
+  local :: Identifier
+}
+
+ImportNode :: {
+  type :: "ImportDeclaration",
+  source :: { value :: String },
+  specifiers :: [ ImportSpec ],
+  funkrit :: { use :: String }
+}
+
+LibExports :: {
+  url :: String,
+  exports :: [String]
+}
+
+*/
+
+libUrl :: [String]
+libUrl = ['source', 'value']
+
+funkritUse :: [String]
+funkritUse = ['funkrit', 'use']
+
+isFunkritUseImport :: ImportNode -> Bool
+isFunkritUseImport = allPass $ [propEq('type', 'ImportDeclaration'), has('funkrit')]
+
+isImportOf :: String -> ImportNode -> Bool
+isImportOf = pathEq $ libUrl
+
+isTypeOfUse :: String -> ImportNode -> Bool
+isTypeOfUse = pathEq(funkritUse)
+
+getFunkritUseImports ::  AST -> [ImportNode]
+getFunkritUseImports = filter(isFunkritUseImport) . prop('body')
+
+findUseIndex ::  String -> [Node] -> Interger
+findUseIndex = url -> findIndex $ allPass $ [isImportOf(url), isFunkritUseImport]
+
+setPropSpecs :: [ImportSpec] -> ImportNode -> ImportNode
+setPropSpecs = set(lensProp $ 'specifiers')
+
+makeImportSpec :: String -> ImportSpec
+makeImportSpec = name -> ({
+    type: 'ImportSpecifier',
+    imported: {
+        type: 'Identifier',
+        name
+    },
+    local: {
+        type: 'Identifier',
+        name
+    }
+})
+
+makeAllSpecs :: [String] -> ImportNode -> ImportNode
+makeAllSpecs = names -> setPropSpecs $ map(makeImportSpec, names)
+
+isNormalImport :: ImportSpecifier -> Bool
+isNormalImport = x -> equals(path(['imported','name'], x), path(['local','name'], x))
+
+exclusiveImport :: [ImportSpecifier], ImportSpecifier -> [ImportSpecifier]
+exclusiveImport = (specs, x) -> isNormalImport(x) ? specs : append(x, specs)
+
+updateExclusiveSpecs :: [String] -> ImportNode -> ImportNode
+updateExclusiveSpecs = names -> over(lensProp('specifiers'), specs ->
+    reduce((res, name) -> {
+        i = findIndex(pathEq(['imported', 'name'], name), specs)
+        return i === -1 ? append(makeImportSpec $ name, res)
+                        : exclusiveImport(res, nth(i, specs))
+    }, [], names)
+)
+
+updateImportNode :: [String] -> ImportNode -> ImportNode
+updateImportNode = names -> cond $
+[
+    [ isTypeOfUse $ 'Full', makeAllSpecs(names) ],
+    [ isTypeOfUse $ 'Exclusive', updateExclusiveSpecs(names) ]
+]
+
+updateFunkritUseImports :: AST, LibExports -> AST
+updateFunkritUseImports = (ast, exp) -> over(lensProp $ 'body', body -> {
+    {url, exports} = exp
+    return over(lensIndex(findUseIndex(url) $ body), updateImportNode(exports), body)
+}, ast)
+
