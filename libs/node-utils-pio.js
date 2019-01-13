@@ -9,6 +9,7 @@
  * read Javascript/JSON file to Javascript Object
  */
 
+const fs = require('fs')
 const path = require('path')
 const {PIO, purePIO, failPIO} = require('pio.js')
 
@@ -24,5 +25,18 @@ function readExportedNames(url) {
     }
 }
 
+// writeToFile :: String, String -> {String::String}
+function writeToFile(url, content) {
+    try {
+        return PIO(() => {
+            fs.writeFileSync(url, content)
+            return Promise.resolve({status: 'ok'})
+        })
+    } catch(e) {
+        return failPIO(e)
+    }
+}
+
 exports.readExportedNames = readExportedNames
+exports.writeToFile = writeToFile
 

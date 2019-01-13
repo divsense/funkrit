@@ -1,0 +1,39 @@
+export funkrit
+
+import 'reader-either-io' { liftEIO,  }
+import 'cli-eio' { readOptions, readSource }
+import 'node-utils-io' { readExportedNames }
+import 'build-ast' { build }
+import 'compile' { compile }
+
+funkrit = () -> {
+
+    stdlib <- readOption('stdlib')
+
+    source <- readSource()
+
+    ast <- build(ast)
+
+    
+
+    if( noStdlib(stdlib, ast) ) {
+        
+
+    }
+
+    code <- mapIO(compile(ast))
+
+    output <- readOption('output')
+
+    if(output) {
+
+        return writeToFile(output, code)
+
+    } else {
+
+        return stdout(code)
+    }
+
+
+}
+

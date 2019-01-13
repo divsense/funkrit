@@ -3,14 +3,14 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 26.12.2018
- * Last Modified Date: 30.12.2018
+ * Last Modified Date: 12.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 import test from 'ava'
 import { map, chain, always, add } from 'ramda'
 import { PIO, purePIO } from '../libs/pio.js'
-import { right, left, isRighht, isLeft, EitherT, liftRight } from '../build/test/either.js'
-import { liftReaderT } from '../build/test/reader.js'
+import { right, left, isRighht, isLeft, EitherT, liftEitherT as liftE } from '../build/test/either.js'
+import { liftReaderT as liftR } from '../build/test/reader.js'
 import { pureRepio, failRepio, runRepio, askRepio, liftPIO } from '../build/test/reader-either-pio.js'
 
 test('Repio :: map', async t => {
@@ -60,7 +60,6 @@ test('Repio :: chain', async t => {
     t.is(left(x4), 'error')
 
     const x5 = await runRepio(e5).catch(x => t.is(x, 'a'))
-    t.falsy(x5)
 
 })
 
@@ -70,7 +69,7 @@ test('Repio :: lift', async t => {
     const pio2 = x => PIO(() => Promise.resolve(x + ' = ok'))
 
     const e1 = pureRepio(2)
-    const e2 = e1.chain(x => liftReaderT(liftRight(pio1(x))))
+    const e2 = e1.chain(x => liftR(liftE(pio1(x))))
     const e3 = e2.chain(x => liftPIO(pio2(x)))
 
     const x2 = await runRepio(e2, 0)

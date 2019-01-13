@@ -3,7 +3,7 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 26.12.2018
- * Last Modified Date: 30.12.2018
+ * Last Modified Date: 12.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 import test from 'ava'
@@ -62,10 +62,8 @@ test('EitherPIO :: chain', async t => {
     t.is(left(x4), 'error')
 
     const x5 = await runEitherT(e5).catch(x => t.is(x, 'a'))
-    t.falsy(x5)
 
     const x6 = await runEitherT(e7).catch(x => t.is(x, 'rejected: 2'))
-    t.falsy(x6)
 
 })
 

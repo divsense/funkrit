@@ -1,10 +1,10 @@
 export build
-//use 'ramda'
-//use 'funkrit/libs/math'
+use 'ramda'
 
+import 'astring' { generate }
 import 'peg-parser' { parse as pegParse }
 import 'pio' { purePIO, mapAll }
-import 'node-utils-pio' { readExportedNames }
+import 'node-utils-pio' { readExportedNames, writeToFile }
 import 'reader-either-pio' { liftPIO, pureRepio }
 import 'ast-utils' { getFunkritUseImports, updateFunkritUseImports }
 
@@ -13,14 +13,24 @@ sourceValue = path $ ['source', 'value']
 
 build :: String -> Repio(AST)
 build = str -> {
+    rawAst <- map(pegParse, pureRepio(str))
 
-    ast <- map(pegParse, pureRepio(str))
-
-    uses = getFunkritUseImports(ast)
-    /*idents = getLocalIdentifiers $ ast*/
+    uses = getFunkritUseImports(rawAst)
 
     exports <- liftPIO $ mapAll(readExportedNames) $ map(sourceValue, uses) // exports = [{url::String, exports::[String]}]
 
-    return pureRepio $ reduce(updateFunkritUseImports, ast, exports)
+    ast = reduce(updateFunkritUseImports, rawAst, exports)
+
+    options <- askRepio()
+
+    {astonly, output} = options
+
+    if(astonly) {
+        return pureRepio(ast)
+    }
+
+    code <- map(generate, pureRepio(ast))
+
+    return liftPIO $ writeToFile(output, code)
 }
 
