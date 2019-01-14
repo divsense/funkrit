@@ -34,7 +34,7 @@
     function buildProgram(uses, imports, body, exports) {
         return extractList(uses, 1)
                 .concat(extractList(imports, 1))
-                .concat(body[1])
+                .concat(body && body[1] || [])
                 .concat([exports])
     }
 
@@ -201,16 +201,36 @@ SourceElement
   = Statement
 
 Statement
-  = Block
+  = ExecBlock
   / DoMonadStatement
   / FunctionDeclarationStatement
   / DeclarationStatement
+  / Block
   / EmptyStatement
   / ExpressionStatement
   / IfStatement
   / BreakStatement
   / SwitchStatement
   / ReturnStatement
+
+ExecBlock
+  = "{{" __ body:(StatementList __)? "}}" {
+      return {
+          type: "CallExpression",
+          callee: {
+            type: "FunctionExpression",
+            id: null,
+            generator: false,
+            expression: false,
+            params: [],
+            body: {
+              type: "BlockStatement",
+              body: optionalList(extractOptional(body, 0))
+            }
+          },
+          arguments: []
+      }
+  }
 
 Block
   = "{" __ body:(StatementList __)? "}" {
@@ -225,19 +245,34 @@ StatementList
       return buildList(head, tail, 1);
 }
 
+DoMonadStatement
+  = head:DoArrowExpression body:(__ StatementList) {
+      return {
+        type: "ReturnStatement",
+        argument: { 
+            type: "CallExpression",
+            callee: head.callee,
+            arguments: [
+                {
+                  type: "FunctionExpression",
+                  generator: false,
+                  expression: false,
+                  params: head.arg,
+                  body: {
+                    type: "BlockStatement",
+                    body: (body && body[1]) || []
+                  }
+                }
+            ]
+          }
+      };
+}
+
 EmptyStatement
   = ";" { return { type: "EmptyStatement" }; }
 
-DoMonadStatement
-  = expression:DoMonadExpression EOS {
-      return {
-        type: "ExpressionStatement",
-        expression: expression
-      };
-    }
-
 FunctionDeclarationStatement
-  = type:(TypeAnnotation)? id:Identifier __ "=" __ params:ArrowFunctionParameters __ ArrowToken __ body:FunctionBody {
+  = type:(TypeAnnotation)? id:Identifier __ "=" __ params:DeclaredFunctionParameters __ ArrowToken __ body:FunctionBody {
       return {
         type: "FunctionDeclaration",
         id: id,
@@ -247,6 +282,11 @@ FunctionDeclarationStatement
         body: body
       };
     }
+
+DeclaredFunctionParameters
+  = FunctionParameters
+  / p:DoArrayPattern { return [p] }
+  / p:DoObjectPattern { return [p] }
 
 DeclarationStatement
   = __ declaration:Declaration EOS {
@@ -258,13 +298,17 @@ DeclarationStatement
     }
 
 Declaration
-  = type:TypeAnnotation? __ id:(Identifier / ArrayPattern / ObjectPattern) __ "=" __ init:(__ SingleExpression)? {
+  = type:TypeAnnotation? __ id:(Identifier / DoArrayPattern / DoObjectPattern) __ "=" __ init:AssignmentExpression {
       return {
         type: "VariableDeclarator",
         id: id,
-        init: extractOptional(init, 1)
+        init: init
       };
     }
+
+AssignmentExpression
+  = ExecBlock
+  / SingleExpression
 
 TypeAnnotation
   = Identifier WhiteSpace* "::" WhiteSpace* (!LineTerminator SourceCharacter)+ LineTerminator
@@ -313,6 +357,9 @@ ReturnStatement
       return { type: "ReturnStatement", argument: null };
     }
   / ReturnToken _ argument:SingleExpression EOS {
+      return { type: "ReturnStatement", argument: argument };
+    }
+  / ReturnToken _ argument:ExecBlock EOS {
       return { type: "ReturnStatement", argument: argument };
     }
 
@@ -554,31 +601,8 @@ UnaryOperator
   / "~"
   / "!"
 
-DoMonadExpression
-  = head:DoArrowExpression body:(__ StatementList) {
-      return {
-        type: "ReturnStatement",
-        argument: { 
-            type: "CallExpression",
-            callee: head.callee,
-            arguments: [
-                {
-                  type: "ArrowFunctionExpression",
-                  generator: false,
-                  expression: true,
-                  params: head.arg,
-                  body: {
-                    type: "BlockStatement",
-                    body: body[1]
-                  }
-                }
-            ]
-          }
-      };
-}
-
 DoArrowExpression
-  = arg:ArrowFunctionParameters __ DoArrowToken __ expr: SingleExpression {
+  = arg:DoMonadFunctionParameters __ DoArrowToken __ expr:SingleExpression EOS {
       return {
         arg: arg,
         callee:{
@@ -592,6 +616,43 @@ DoArrowExpression
           }
         }
   }
+
+DoMonadBodyExpression
+  = Identifier
+
+DoMonadFunctionParameters
+    = id:Identifier { return [id] }
+    / p:DoArrayPattern { return [p] }                            // ECMAScript 6: Parameter Context Matching
+    / p:DoObjectPattern { return [p] }                            // ECMAScript 6: Parameter Context Matching
+    / '*' {
+        return [];
+    }
+
+DoArrayPattern
+    = "[" _ head:Identifier _ tail:("," _ Identifier _)* "]" {
+      return {
+        type: "ArrayPattern",
+        elements: buildList(head, tail, 2)
+      };
+    }
+
+DoObjectPattern
+    = "{" _ head:Identifier _ tail:("," _ Identifier _)* "}" {
+      return {
+        type: "ObjectPattern",
+        properties: buildList(head, tail, 2).map(function(x) {
+            return { 
+                type: "Property",
+                key: x,
+                value: x,
+                kind: "init",
+                method: false,
+                shorthand: true,
+                computed: false
+            };
+        })
+      };
+    }
 
 CallExpression
     = head: (CalleeHead / CalleeExpression) __ '$' __ arg: Argument {
@@ -642,7 +703,7 @@ PrimaryExpression
   / "(" __ expression:SingleExpression __ ")" { return expression; }
 
 ArrowFunction
-  = params:ArrowFunctionParameters __ ArrowToken __ func:ArrowFunctionBody { // ECMAScript 6
+  = params:FunctionParameters __ ArrowToken __ func:ArrowFunctionBody { // ECMAScript 6
       return {
         type: "ArrowFunctionExpression",
         params: params,
@@ -716,7 +777,7 @@ PropertyName
 PropertySetParameterList
   = id:Identifier { return [id]; }
 
-ArrowFunctionParameters
+FunctionParameters
     = id:Identifier { return [id] }
     / '(' __ params:FormalParameterList? __ ')' {
         return params || [];
@@ -730,13 +791,7 @@ FormalParameterList
     / p:ObjectPattern { return [p] }                           // ECMAScript 6: Parameter Context Matching
 
 FormalParameterArg
-    = id:Identifier __ "=" __ init:SingleExpression {
-        return {
-            type: "AssignmentPattern",
-            left: id,
-            right: init 
-        }
-    }
+    = SpreadElement
     / Identifier
 
 ArrowFunctionBody

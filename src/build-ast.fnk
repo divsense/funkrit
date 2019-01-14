@@ -1,36 +1,35 @@
-export build
+export buildAst
 use 'ramda'
 
 import 'astring' { generate }
 import 'peg-parser' { parse as pegParse }
-import 'pio' { purePIO, mapAll }
-import 'node-utils-pio' { readExportedNames, writeToFile }
-import 'reader-either-pio' { liftPIO, pureRepio }
-import 'ast-utils' { getFunkritUseImports, updateFunkritUseImports }
+import 'io' { pureIO }
+import 'node-utils-io' { readExportedNames, writeToFile, consoleError }
+import 'reader-either-io' { liftIO, pureReio as pureR, askReio as askR }
+import 'ast-utils' { getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse }
 
-sourceValue :: {source::{value::String}} -> String
-sourceValue = path $ ['source', 'value']
+buildAst :: String -> Reio(AST)
+buildAst = str -> {
 
-build :: String -> Repio(AST)
-build = str -> {
-    rawAst <- map(pegParse, pureRepio(str))
+    _ast_ <- map(pegParse, pureR(str))
 
-    uses = getFunkritUseImports(rawAst)
+    {noramda} <- askR()
 
-    exports <- liftPIO $ mapAll(readExportedNames) $ map(sourceValue, uses) // exports = [{url::String, exports::[String]}]
+    [urls, ast] = {{
+        urls = getFunkritUseUrls(_ast_)
+        hasRamda = indexOf('ramda', urls) > -1
+        if(noramda || hasRamda){
+            return [urls, _ast_]
+        } else {
+            return [append('ramda', urls), addFunkritFullUse('ramda', _ast_)]
+        }
+    }}
 
-    ast = reduce(updateFunkritUseImports, rawAst, exports)
+    /** <- liftIO $ consoleError(ast)*/
 
-    options <- askRepio()
+    /*exports <- liftIO $ mapM(readExportedNames, urls) // exports = [{url::String, exports::[String]}]*/
+    exports <- liftIO $ readExportedNames(urls) // exports = [{url::String, exports::[String]}]
 
-    {astonly, output} = options
-
-    if(astonly) {
-        return pureRepio(ast)
-    }
-
-    code <- map(generate, pureRepio(ast))
-
-    return liftPIO $ writeToFile(output, code)
+    return pureR $ reduce(updateFunkritUseImports, ast, exports)
 }
 

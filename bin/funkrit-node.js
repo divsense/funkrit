@@ -1,18 +1,17 @@
 /**
- * @file             : /Users/olegkirichenko/projects/divsense/funkrit/bin/funkrit-node.js
+ * @file             : bin/funkrit-node.js
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 01.12.2018
- * Last Modified Date: 10.01.2019
+ * Last Modified Date: 13.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 const { compose, append, keys, map, flatten } = require('ramda')
 const fs = require('fs')
+const path = require('path')
 const buildOptions = require('minimist-options')
 const minimist = require('minimist')
-const { build } = require('../dist/build-ast.js')
-const { runRepio } = require('../dist/reader-either-pio.js')
-const { isRight, right, left } = require('../dist/either.js')
+const {parse} = require('../dist/ast-node.js')
 const { generate } = require('astring')
 
 const options = buildOptions({
@@ -24,26 +23,30 @@ const options = buildOptions({
         type: 'boolean',
         alias: ['a']
     },
+    ramda: {
+        type: 'boolean',
+        default: true
+    },
     output: {
         type: 'string',
         alias: ['o']
     },
-    stdlib: {
+    implicit: {
         type: 'string',
-        alias: ['s'],
-        default: 'ramda'
+        alias: ['i']
     },
     stopEarly: true
 })
 
 const args = minimist(process.argv.slice(2), options)
 
+//console.log(args)
+
 if(!args._.length || args.help) {
     console.log('Usage:')
     console.log('npm run funkrit [options] <source>')
     console.log('  [-a, --ast]      : generate AST only')
     console.log('  [-o, --output]   : output path')
-    console.log('  [-s, --stdlib]   : standard library (default: "ramda"')
     console.log('  <source>         : path to funkrit source file (if equals to "-" then read from STDIN)')
     return
 }
@@ -55,37 +58,36 @@ try {
 
     const es = !args.e ? [] : Array.isArray(args.e) ? args.e : [args.e]
 
-    const pres = build(source)
+    const ast = parse(source)
 
-    runRepio(pres, args).then(eres => {
-        if(isRight(eres)) {
-            const ast = right(eres)
-
-            if(args.ast) {
-                if(args.output) {
-                } else {
-                    console.log(JSON.stringify(ast, null, 2))
-                }
-            } else {
-                const code = generate(ast)
-                if(args.output) {
-                    fs.writeFileSync(args.output, code)
-                } else {
-                    console.log(generate(ast))
-                }
-            }
-
+    if(args.ast) {
+        if(args.output) {
         } else {
-            console.log('Error:', left(eres))
+            console.log(JSON.stringify(ast, null, 2))
         }
-    })
-    .catch( err => {
-        console.log('PError:', err)
-    })
-
+    } else {
+        const code = generate(ast)
+        if(args.output) {
+            fs.writeFileSync(args.output, code)
+        } else {
+            console.log(code)
+        }
+    }
 
 }
 catch(err) {
-    console.log('FError:', err)
+    console.log('Error:', err)
+}
+
+function resolvePath(p) {
+    return path.extname(p) == '' ? p + '.js' : p
+}
+
+function resolveEmbeddedLibPath(name) {
+    if(name.indexOf('/') > -1) {
+        return resolvePath(name)
+    } else {
+        return resolvePath('../libs/' + name) || resolvePath('./node_modules/funkrit/libs/' + name)
+    }
 }
 

@@ -28,7 +28,7 @@ TESTS := $(addprefix $(TESTDIR)/, \
 	)
 
 BUILDEXMPLDIR := examples/build
-EXAMPLES := $(addprefix $(BUILDEXMPLDIR)/, monads.js use.js )
+EXAMPLES := $(addprefix $(BUILDEXMPLDIR)/, monads.js monads.ast )
 
 vpath %.pegjs grammar
 vpath %.fnk src
@@ -124,7 +124,7 @@ examples/build/monads.js: monads.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
 examples/build/monads.ast: monads.fnk
-	node ./bin/funkrit-node.js --ast -o $@ $<
+	node ./bin/funkrit-node.js --ast $< > $@
 
 examples/build/use.js: use.fnk
 	node ./bin/funkrit-node.js -o $@ $<
@@ -134,7 +134,7 @@ examples/build/use.ast: use.fnk
 
 # Temp
 
-temp: temp/play.js temp/play.ast temp/test.ast
+temp: temp/test.ast
 
 temp/play.js: temp/play.fnk
 	node ./bin/funkrit-node.js -o $@ $<
@@ -143,7 +143,7 @@ temp/play.ast: temp/play.fnk
 	node ./bin/funkrit-node.js --ast -o $@ $<
 
 temp/test.ast: temp/test.js
-	node node_modules/.bin/acorn --ecma2015 --module -o $@ $<
+	node node_modules/.bin/acorn --ecma2015 --module $< > $@
 
 clean:
 	- rm build/*.js

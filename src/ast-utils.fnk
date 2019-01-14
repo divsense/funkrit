@@ -1,4 +1,4 @@
-export getFunkritUseImports, updateFunkritUseImports
+export getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse
 use 'ramda'
 
 /*
@@ -46,8 +46,8 @@ isImportOf = pathEq $ libUrl
 isTypeOfUse :: String -> ImportNode -> Bool
 isTypeOfUse = pathEq(funkritUse)
 
-getFunkritUseImports ::  AST -> [ImportNode]
-getFunkritUseImports = filter(isFunkritUseImport) . prop('body')
+getFunkritUseUrls ::  AST -> [String]
+getFunkritUseUrls = map(path(libUrl)) . filter(isFunkritUseImport) . prop('body')
 
 findUseIndex ::  String -> [Node] -> Interger
 findUseIndex = url -> findIndex $ allPass $ [isImportOf(url), isFunkritUseImport]
@@ -66,6 +66,14 @@ makeImportSpec = name -> ({
         type: 'Identifier',
         name
     }
+})
+
+makeFunkritFullUse :: String -> ImportDeclaration
+makeFunkritFullUse = name -> ({
+  type: "ImportDeclaration",
+  source: { value: name },
+  specifiers: [],
+  funkrit: { use: 'Full' }
 })
 
 makeAllSpecs :: [String] -> ImportNode -> ImportNode
@@ -98,4 +106,7 @@ updateFunkritUseImports = (ast, exp) -> over(lensProp $ 'body', body -> {
     {url, exports} = exp
     return over(lensIndex(findUseIndex(url) $ body), updateImportNode(exports), body)
 }, ast)
+
+addFunkritFullUse :: String, AST -> AST
+addFunkritFullUse = (name, ast) -> over(lensProp $ 'body', prepend $ makeFunkritFullUse(name), ast)
 
