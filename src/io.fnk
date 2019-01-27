@@ -6,12 +6,13 @@ IO = run -> ({
     run,
     pure: pureIO,
     map: f -> IO $ f . run,
-    chain: f -> IO $ runIO . f . run
+    chain: f -> IO $ runIO . f . run,
+    ap: mv -> IO $ () -> runIO $ map(run(), mv)
 })
 
-pureIO :: a -> IO(a)
+pureIO :: a -> IO a
 pureIO = a -> IO $ () -> a
 
-runIO :: IO -> a
+runIO :: IO a -> a
 runIO = call . prop('run')
 

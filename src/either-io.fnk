@@ -1,12 +1,14 @@
-export RightIO, LeftIO
+export RightIO, LeftIO, runEIO, Right, Left, isRight, isLeft
 use 'ramda'
 
 import 'io' { pureIO }
-import 'either' { Right, Left, EitherT }
+import 'either' { Right, Left, EitherT, runEitherT, isRight, isLeft }
 
 RightIO :: a -> EitherT IO Either a
 RightIO = EitherT . pureIO . Right
 
 LeftIO :: a -> EitherT IO Either a
 LeftIO = EitherT . pureIO . Left
+
+runEIO = call . runEitherT
 

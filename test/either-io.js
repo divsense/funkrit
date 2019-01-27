@@ -3,7 +3,7 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 26.12.2018
- * Last Modified Date: 12.01.2019
+ * Last Modified Date: 26.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 import test from 'ava'
@@ -12,7 +12,7 @@ import { right, left, isRighht, isLeft, EitherT, runEitherT, liftEitherT as lift
 import { pureIO, IO } from '../build/test/io.js'
 import { RightIO, LeftIO } from '../build/test/either-io.js'
 
-test('EitherIO :: map', t => {
+test('EitherIO :: functor', t => {
 
     const e1 = RightIO(2)
     const e2 = map(add(2), e1)
@@ -37,7 +37,7 @@ test('EitherIO :: map', t => {
 
 })
 
-test('EitherIO :: chain', t => {
+test('EitherIO :: monad', t => {
 
     const e1 = RightIO(2)
     const e2 = e1.chain(x => RightIO(x + 2))
@@ -61,6 +61,20 @@ test('EitherIO :: chain', t => {
     const x5 = runEitherT(e5)
     t.is(isLeft(x5), true)
     t.is(left(x5), 'throw')
+
+})
+
+test.only('EitherIO :: applicative', t => {
+
+    const e1 = LeftIO(x => x + 4)
+    const e2 = RightIO(4)
+
+    const e3 = e1.ap(e2)
+
+    const x3 = runEitherT(e3)
+
+    console.log(">>", x3)
+    t.is(right(x3), 11)
 
 })
 

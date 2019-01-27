@@ -25,6 +25,7 @@ TESTS := $(addprefix $(TESTDIR)/, \
 	either-pio.js \
 	reader-either-io.js \
 	reader-either-pio.js \
+	node-utils-eio.js \
 	)
 
 BUILDEXMPLDIR := examples/build
@@ -35,6 +36,9 @@ vpath %.fnk src
 vpath %.fnk examples
 
 all: $(OBJS) examples
+
+dist: $(TESTS)
+	cp $(TESTDIR)/* dist
 
 test: $(TESTS)
 	npm test
@@ -116,6 +120,9 @@ build/test/reader-either-io.js: build/reader-either-io.js
 build/test/reader-either-pio.js: build/reader-either-pio.js
 	./node_modules/.bin/webpack --config webpack.test.config.js -o $@ $<
 
+build/test/node-utils-eio.js: libs/node-utils-eio.js
+	./node_modules/.bin/webpack --config webpack.test.config.js -o $@ $<
+
 # Examples
 
 examples: $(EXAMPLES) build/peg-parser.js
@@ -149,5 +156,5 @@ clean:
 	- rm build/*.js
 	- rm build/test/*.js
 
-.PHONY = all node clean temp test examples parser
+.PHONY = all node clean temp test examples parser dist
 

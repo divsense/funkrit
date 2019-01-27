@@ -3,7 +3,7 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 09.01.2019
- * Last Modified Date: 09.01.2019
+ * Last Modified Date: 26.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 const {RightIO} = require('either-io')
@@ -17,5 +17,4 @@ function askOptions() {
     return RightIO(options)
 
 }
-
 

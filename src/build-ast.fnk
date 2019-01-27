@@ -1,10 +1,9 @@
 export buildAst
-use 'ramda'
 
 import 'astring' { generate }
 import 'peg-parser' { parse as pegParse }
 import 'io' { pureIO }
-import 'node-utils-io' { readExportedNames, writeToFile, consoleError }
+import 'node-utils-eio' { readExports }
 import 'reader-either-io' { liftIO, pureReio as pureR, askReio as askR }
 import 'ast-utils' { getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse }
 
@@ -27,9 +26,10 @@ buildAst = str -> {
 
     /** <- liftIO $ consoleError(ast)*/
 
-    /*exports <- liftIO $ mapM(readExportedNames, urls) // exports = [{url::String, exports::[String]}]*/
-    exports <- liftIO $ readExportedNames(urls) // exports = [{url::String, exports::[String]}]
+    exports <- liftIO $ sequence(pureIO, map(readExports, urls)) // exports = [{url::String, exports::[String]}]
 
-    return pureR $ reduce(updateFunkritUseImports, ast, exports)
+    console.log("EXPORTS", exports)
+
+    return pureR $ exports //reduce(updateFunkritUseImports, ast, exports)
 }
 
