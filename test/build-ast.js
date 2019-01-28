@@ -3,7 +3,7 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 01.01.2019
- * Last Modified Date: 26.01.2019
+ * Last Modified Date: 27.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 
@@ -21,13 +21,14 @@ test.only('build-ast : full use, noramda', t => {
 
     const src =
         "export foo\n" +
-        "use '../../libs/number'\n" +
+        "use '../../libs/number.js'\n" +
         "foo = 123"
 
     const res = buildAst(src)
-    const x = runR(res, options)
+    //const x = runR(res, options)
 
-    console.log("::", x)
+    //console.log("::", x)
+    console.log("::", res.run(options).monad.run())
 
     t.pass()
 

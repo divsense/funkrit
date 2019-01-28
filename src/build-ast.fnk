@@ -2,7 +2,8 @@ export buildAst
 
 import 'astring' { generate }
 import 'peg-parser' { parse as pegParse }
-import 'io' { pureIO }
+import 'either-io' { RightIO }
+import 'node-utils-io' { logError }
 import 'node-utils-eio' { readExports }
 import 'reader-either-io' { liftIO, pureReio as pureR, askReio as askR }
 import 'ast-utils' { getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse }
@@ -17,6 +18,7 @@ buildAst = str -> {
     [urls, ast] = {{
         urls = getFunkritUseUrls(_ast_)
         hasRamda = indexOf('ramda', urls) > -1
+
         if(noramda || hasRamda){
             return [urls, _ast_]
         } else {
@@ -24,9 +26,9 @@ buildAst = str -> {
         }
     }}
 
-    /** <- liftIO $ consoleError(ast)*/
+    * <- liftIO $ logError("URLS: " + urls)
 
-    exports <- liftIO $ sequence(pureIO, map(readExports, urls)) // exports = [{url::String, exports::[String]}]
+    exports <- liftIO $ sequence(RightIO, map(readExports, urls)) // exports = [{url::String, exports::[String]}]
 
     console.log("EXPORTS", exports)
 

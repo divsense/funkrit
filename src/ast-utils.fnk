@@ -1,7 +1,11 @@
 export getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse
-use 'ramda'
 
 /*
+data AST = {
+  type: "Program",
+  body: [ Directive | Statement ]
+}
+
 
 Types aliases
 -------------

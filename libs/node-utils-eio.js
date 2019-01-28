@@ -10,7 +10,7 @@
  */
 
 const fs = require('fs')
-const {RightIO, LeftIO, Right, Left, isRight, isLeft, runEIO} = require('either-io.js')
+const {RightIO, LeftIO} = require('either-io.js')
 
 // readExports :: String -> EitherT IO {url::String, exports::[String]}
 function readExports(url) {
@@ -34,11 +34,6 @@ function writeToFile(url, content) {
 
 exports.readExports = readExports
 exports.writeToFile = writeToFile
-exports.Right = Right
-exports.Left = Left
-exports.isRight = isRight
-exports.isLeft = isLeft
-exports.runEIO = runEIO
 
 
 

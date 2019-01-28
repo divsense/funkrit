@@ -3,13 +3,14 @@
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 26.12.2018
- * Last Modified Date: 26.01.2019
+ * Last Modified Date: 27.01.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 import test from 'ava'
 import path from 'path'
 import { sequence, compose, find, prop, equals, map, always, add } from 'ramda'
-import { readExports, writeToFile, isRight, isLeft, runEIO } from '../build/test/node-utils-eio.js'
+import { RightIO, isRight, isLeft, runEIO, pureEIO } from '../build/test/either-io.js'
+import { readExports, writeToFile } from '../build/test/node-utils-eio.js'
 
 test('readExports, happy path', t => {
 
@@ -41,13 +42,14 @@ test('readExports, unhappy path', t => {
 
 test('readExports, sequence', t => {
 
-    const url1 = path.resolve('libs/math.js') 
-    const url2 = path.resolve('libs/number.js') 
-    const eio = map(readExports, [url1, url2])
+    const url1 = '../../libs/math.js'  // relative to build/test
+    const url2 = '../../libs/number.js'
+    const mxs = map(readExports, [url1, url2])
+    const eio = sequence(RightIO, mxs)
 
-    //const x1 = runEIO(eio1)
+    const x = runEIO(eio)
 
-    console.log(">>", eio)
+    t.is(isRight(x), true)
+    t.is(x.right.length, 2)
 
-    t.pass()
 })

@@ -6,7 +6,7 @@ use 'ramda'
 
 import 'reader' { ReaderT, liftReaderT }
 import 'either' { runEitherT, liftEitherT }
-import 'either-io' { RightIO, LeftIO }
+import 'either-io' { RightIO, LeftIO, runEIO }
 
 pureReio :: a -> ReaderT EitherIO a
 pureReio = a -> ReaderT $ r -> RightIO(a)
@@ -15,7 +15,7 @@ failReio :: a -> EitherT IO Either a
 failReio = a -> ReaderT $ r -> LeftIO(a)
 
 runReio :: r -> ReaderT m a -> a
-runReio = (m, r) -> runEitherT $ prop('run', m) $ r
+runReio = (m, r) -> runEIO $ prop('run', m) $ r
 
 liftIO :: IO a -> ReaderT IO a
 liftIO = liftReaderT . liftEitherT

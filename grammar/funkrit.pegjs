@@ -302,7 +302,11 @@ Declaration
       return {
         type: "VariableDeclarator",
         id: id,
-        init: init
+        init: init,
+        trailingComments: [{
+            type: "Line",
+            value: " :: Comment",
+        }]
       };
     }
 
@@ -416,7 +420,11 @@ ExportStatement
         loc: location(),
         declaration: null,
         source: null,
-        specifiers: buildNamedExportList(head, tail, 3)
+        specifiers: buildNamedExportList(head, tail, 3),
+        trailingComments: [{
+            type: "Line",
+            value: " @flow",
+        }]
       };
   }
 
@@ -462,6 +470,17 @@ ImportSpec
 		local: id
     }
   }
+
+DataDeclarationStatement
+  = "data" __ id:Identifier __ "=" __ declarators:DataDeclarators {
+      return {
+        type: "Block",
+        value: "1234"
+      };
+    }
+
+DataDeclarators
+  = "asd"
 
 SingleExpression
     = ConditionalExpression
