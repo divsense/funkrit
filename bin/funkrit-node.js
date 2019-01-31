@@ -11,7 +11,8 @@ const fs = require('fs')
 const path = require('path')
 const buildOptions = require('minimist-options')
 const minimist = require('minimist')
-const {parse} = require('../dist/ast-node.js')
+const { parse } = require('../dist/ast-node.js')
+const { fnkGenerator } = require('../dist/fnkGenerator.js')
 const { generate } = require('astring')
 
 const options = buildOptions({
@@ -67,7 +68,7 @@ try {
             console.log(JSON.stringify(ast, null, 2))
         }
     } else {
-        const code = generate(ast, {comments: true})
+        const code = generate(ast, {comments: true, generator: fnkGenerator})
         if(args.output) {
             fs.writeFileSync(args.output, code)
         } else {

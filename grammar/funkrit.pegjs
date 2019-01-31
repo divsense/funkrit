@@ -34,7 +34,7 @@
     function buildProgram(uses, imports, body, exports) {
         return extractList(uses, 1)
                 .concat(extractList(imports, 1))
-                .concat(body && body[1] || [])
+                .concat(body)
                 .concat([exports])
     }
 
@@ -174,6 +174,73 @@
         };
     }
 
+    function trim(x){
+        return x.replace(/^(\s+|\()|(\s+|\))$/gm,'');
+    }
+
+    function getArgumentAnnotations(ans) {
+        var xs = ans.split('->').map(trim).reduce(function(m,a) {
+            m.push(a.split(',').map(trim))
+            return m
+        }, [])
+
+        var args = xs.shift()
+
+        var rest = xs.reduce(function(m,a) {
+            if(m !== '') {
+                m += ' => '
+            }
+
+            if(a.length === 0) {
+                return m + '()'
+            } else if(a.length === 1) {
+                return m + a[0]
+            } else {
+                return m + '(' + a.join(',') + ')'
+            }
+
+        }, '')
+
+        return [args, rest]
+    }
+
+    function buildFunctionDeclaration(type, id, params, body) {
+
+      var res = {
+        type: "FunctionDeclaration",
+        id: id,
+        generator: false,
+        expression: false,
+        params: params,
+        body: body
+      };
+
+      if(type) {
+         var ans = getArgumentAnnotations(type); // [[number, boolean], [string']]
+
+         var args = ans[0]
+         var rest = ans[1]
+
+         for(var i = 0; i < params.length; i++) {
+            if(args[i]) {
+                params[i].comments = [{
+                    type: "Block",
+                    value: ": " + args[i],
+                }]
+            }
+         }
+
+         res.body.comments = [{
+            type: "Block",
+            value: ": " + rest
+         }];
+
+      }
+
+      return res;
+
+    }
+
 }
 
 /////////////////////////////////////////////
@@ -184,11 +251,29 @@ Program
   = exports:ExportStatement
     uses:(__ UseStatement)*
     imports:(__ ImportStatement)*
+    datas:(__ DataDeclarationStatement)*
     body:(__ SourceElements)? {
+
+      var b = (body && body[1]) || [];
+      var d = extractList(datas, 1);
+
+      var comments = [{
+            type: "Line",
+            value: " @flow"
+        }];
+
+      if(d.length) {
+        comments.push({
+            type: "Block",
+            value: "::\n" + d.join("\n") + "\n"
+        });
+      }
+
       return {
         type: "Program",
-        body: buildProgram(uses, imports, body, exports),
-        sourceType: 'module'
+        body: buildProgram(uses, imports, b, exports),
+        sourceType: 'module',
+        comments: comments
       };
     }
 
@@ -273,14 +358,7 @@ EmptyStatement
 
 FunctionDeclarationStatement
   = type:(TypeAnnotation)? id:Identifier __ "=" __ params:DeclaredFunctionParameters __ ArrowToken __ body:FunctionBody {
-      return {
-        type: "FunctionDeclaration",
-        id: id,
-        generator: false,
-        expression: false,
-        params: params,
-        body: body
-      };
+        return buildFunctionDeclaration(type, id, params, body)
     }
 
 DeclaredFunctionParameters
@@ -289,24 +367,28 @@ DeclaredFunctionParameters
   / p:DoObjectPattern { return [p] }
 
 DeclarationStatement
-  = __ declaration:Declaration EOS {
+  = type:(TypeAnnotation)? declaration:Declaration EOS {
+      if(type) {
+          declaration.id.comments = [{
+            type: "Block",
+            value: ": " + type.split('->').join('=>'),
+        }];
+      }
+
       return {
         type: "VariableDeclaration",
         declarations: [declaration],
         kind: "const"
       };
+
     }
 
 Declaration
-  = type:TypeAnnotation? __ id:(Identifier / DoArrayPattern / DoObjectPattern) __ "=" __ init:AssignmentExpression {
+  = id:(Identifier / DoArrayPattern / DoObjectPattern) __ "=" __ init:AssignmentExpression {
       return {
         type: "VariableDeclarator",
         id: id,
-        init: init,
-        trailingComments: [{
-            type: "Line",
-            value: " :: Comment",
-        }]
+        init: init
       };
     }
 
@@ -315,7 +397,10 @@ AssignmentExpression
   / SingleExpression
 
 TypeAnnotation
-  = Identifier WhiteSpace* "::" WhiteSpace* (!LineTerminator SourceCharacter)+ LineTerminator
+  = Identifier WhiteSpace* "::" WhiteSpace* decl:(!LineTerminator SourceCharacter)+ LineTerminator {
+    var body = decl.map(function(x){return x[1]}).join("")
+    return body
+  }
 
 ExpressionStatement
   = !("{" / ArrowToken) expression:SingleExpression EOS {
@@ -420,11 +505,7 @@ ExportStatement
         loc: location(),
         declaration: null,
         source: null,
-        specifiers: buildNamedExportList(head, tail, 3),
-        trailingComments: [{
-            type: "Line",
-            value: " @flow",
-        }]
+        specifiers: buildNamedExportList(head, tail, 3)
       };
   }
 
@@ -472,15 +553,35 @@ ImportSpec
   }
 
 DataDeclarationStatement
-  = "data" __ id:Identifier __ "=" __ declarators:DataDeclarators {
-      return {
-        type: "Block",
-        value: "1234"
-      };
+  = "newtype" __ id:TypeIdentifier __ "=" __ declarator:DataDeclarator {
+      return "type " + id + " = " + declarator + ";"
     }
 
-DataDeclarators
-  = "asd"
+TypeIdentifier
+  = id:Identifier "<" __ head:Identifier tail:(__ "," __ Identifier)* __ ">" {
+    return id.name + "<" + buildList(head, tail, 3).map(function(x){return x.name}).join(",") + ">";
+  }
+  / id:Identifier { return id.name }
+
+DataDeclarator
+  = "{" __ head:DataObjectProp tail:(__ "," __ DataObjectProp)* __ "}" {
+     return "{" + buildList(head, tail, 3).join(",") + "}"
+  }
+  / head:Identifier tail:(__ "|" __ Identifier)* { 
+    return buildList(head, tail, 3).map(function(x){ return x.name }).join("|");
+  }
+  / id:Identifier { return id.name }
+
+DataObjectProp
+  = DataKeyValue
+  / key:Identifier "(" __ head:DataKeyValue tail:(__ "," __ DataKeyValue)* __ ")" __ ":" __ value:Identifier {
+    return key.name + "(" + buildList(head, tail,3).join(",") + "):" + value.name
+  }
+
+DataKeyValue
+  = key:Identifier __ ":" __ value:Identifier {
+    return key.name + ":" + value.name
+  }
 
 SingleExpression
     = ConditionalExpression
@@ -979,6 +1080,7 @@ ReservedWord
   = Keyword
   / NullLiteral
   / BooleanLiteral
+  / "data"
 
 Keyword
   = BreakToken
