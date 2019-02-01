@@ -1,39 +1,36 @@
 export getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse
 
-/*
-data AST = {
+newtype AST = {
   type: "Program",
-  body: [ Directive | Statement ]
+  body: Statement[]
 }
 
+// Types aliases
+// -------------
 
-Types aliases
--------------
-
-Identifier :: {
-  type :: "Identifier",
-  name :: String
+newtype Identifier = {
+  type: "Identifier",
+  name: string
 }
 
-ImportSpec :: {
-  type :: "ImportSpecifier",
-  imported :: Identifier,
-  local :: Identifier
+newtype ImportSpec = {
+  type: "ImportSpecifier",
+  imported: Identifier,
+  local: Identifier
 }
 
-ImportNode :: {
-  type :: "ImportDeclaration",
-  source :: { value :: String },
-  specifiers :: [ ImportSpec ],
-  funkrit :: { use :: String }
+newtype ImportNode = {
+  type: "ImportDeclaration",
+  source: { value: string },
+  specifiers: ImportSpec[],
+  funkrit: { use: string }
 }
 
-LibExports :: {
-  url :: String,
-  exports :: [String]
+newtype LibExports = {
+  url: string,
+  exports: string[]
 }
 
-*/
 
 libUrl :: [String]
 libUrl = ['source', 'value']

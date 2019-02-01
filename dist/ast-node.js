@@ -9,6 +9,7 @@
 const { identity, append, reduce, objOf, keys, not, any, both, pathEq, prepend, over, concat, lensProp, nth, indexOf, always, filter, map, compose, prop, path, propEq, find, assoc } = require('ramda')
 const {parse} = require('../build/peg-parser.js')
 const {Right} = require('./either.js')
+const { selectUsedNames } = require('./selectUsedNames.js')
 
 const ident = compose(
     compose(assoc('type', 'Identifier'), objOf('name'))
@@ -112,5 +113,5 @@ const test = x => {
 }
 
 
-exports.parse = compose(/* test, */ importToRequire, addRamdaImport, parse)
+exports.parse = compose(/* test, importToRequire, */ selectUsedNames, addRamdaImport, parse)
 

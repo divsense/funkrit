@@ -4,9 +4,7 @@
 // Generated parser builds a
 // syntax tree compatible with the ESTree spec [2].
 //
-
 {
-
     function optionalList(value) {
         return value !== null ? value : [];
     }

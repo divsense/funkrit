@@ -1,0 +1,39 @@
+export name1
+
+externalFuncDecl2 :: number -> number
+externalFuncDecl2 = xxx -> xxx + 2
+
+externalFuncDecl1 :: (number, number) -> string -> boolean
+externalFuncDecl1 = (extParam1, filter) -> extInnerParam -> {
+
+    varDecl = filter
+    varDeclASD = concat
+
+    objDecl = {
+        keyObj: prop,
+        keyObjGG: propaa,
+        path: pathaha
+    }
+
+    view = viewaaaa
+
+    over = over
+
+    arrDecl = [arrElem1, find]
+
+    localFuncDecl = locParam -> insert -> {
+        locFuncVar = 123
+        return locParam + when + locFuncVar
+    }
+
+    dfvv = some . map . kuku
+
+    dada <- mukaaa
+
+    propEq <- propEq
+
+    domas >>= type -> return kolp
+
+    return externalFuncDecl2(varDecl, unless)
+}
+

@@ -1,0 +1,50 @@
+export foo
+
+newtype Bar<A, B> = {
+  moo: number,
+  left(a:A):Foo,
+  run(a:string, f:B):boolean
+}
+
+// fdsfsafs
+newtype Foo = {
+    moom: boolean,
+    soup: string,
+    nmb: number
+}
+
+newtype Boom = Foo | string
+
+foo1 :: () -> Boom
+foo1 = () -> "ok"
+
+foo2 :: number -> boolean
+foo2 = x -> x > 1
+
+foo3 :: (number, number) -> boolean
+foo3 = (a, b) -> a > b
+
+foo4 :: number -> number -> string
+foo4 = a -> b -> a + ":" + b
+
+foo5:: (number, number) -> string -> boolean -> Foo
+foo5 = (n1, n2) -> s -> b -> ({
+    moom: b,
+    soup: s,
+    nmb: n1 + n2
+})
+
+goog :: ?number -> string -> boolean -> Foo
+goog = n -> s -> b -> ({
+    moom: b,
+    soup: s,
+    nmb: (n || 0) + 2
+})
+
+getSoup :: Foo -> string
+getSoup = prop('soup')
+
+bar :: Array<number> -> string
+bar = getSoup . goog . head . filter(gt $ 9)
+
+
