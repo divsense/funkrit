@@ -37,6 +37,7 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
+    "ast-types-flow": "0.0.7",
     "flow-bin": "^0.91.0"
   }
 }

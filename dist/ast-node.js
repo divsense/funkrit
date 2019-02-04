@@ -113,5 +113,5 @@ const test = x => {
 }
 
 
-exports.parse = compose(/* test, importToRequire, */ selectUsedNames, addRamdaImport, parse)
+exports.parse = compose(/* test, */ importToRequire, selectUsedNames, addRamdaImport, parse)
 

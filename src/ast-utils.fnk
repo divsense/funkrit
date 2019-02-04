@@ -1,26 +1,26 @@
 export getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse
 
+import_type '../libs/ast-types' { Node }
+
+/*
 newtype AST = {
-  type: "Program",
+  type: string,
   body: Statement[]
 }
 
-// Types aliases
-// -------------
-
 newtype Identifier = {
-  type: "Identifier",
+  type: string,
   name: string
 }
 
 newtype ImportSpec = {
-  type: "ImportSpecifier",
+  type: string,
   imported: Identifier,
   local: Identifier
 }
 
 newtype ImportNode = {
-  type: "ImportDeclaration",
+  type: string,
   source: { value: string },
   specifiers: ImportSpec[],
   funkrit: { use: string }
@@ -30,7 +30,7 @@ newtype LibExports = {
   url: string,
   exports: string[]
 }
-
+*/
 
 libUrl :: [String]
 libUrl = ['source', 'value']
@@ -71,7 +71,7 @@ makeImportSpec = name -> ({
 
 makeFunkritFullUse :: String -> ImportDeclaration
 makeFunkritFullUse = name -> ({
-  type: "ImportDeclaration",
+  type: 'ImportDeclaration',
   source: { value: name },
   specifiers: [],
   funkrit: { use: 'Full' }

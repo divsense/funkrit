@@ -1,39 +1,23 @@
-export name1
+export makeImportSpec
 
-externalFuncDecl2 :: number -> number
-externalFuncDecl2 = xxx -> xxx + 2
+export type Foom
+import type '../libs/ast-types' { ImportSpecifier, Identifier }
 
-externalFuncDecl1 :: (number, number) -> string -> boolean
-externalFuncDecl1 = (extParam1, filter) -> extInnerParam -> {
-
-    varDecl = filter
-    varDeclASD = concat
-
-    objDecl = {
-        keyObj: prop,
-        keyObjGG: propaa,
-        path: pathaha
-    }
-
-    view = viewaaaa
-
-    over = over
-
-    arrDecl = [arrElem1, find]
-
-    localFuncDecl = locParam -> insert -> {
-        locFuncVar = 123
-        return locParam + when + locFuncVar
-    }
-
-    dfvv = some . map . kuku
-
-    dada <- mukaaa
-
-    propEq <- propEq
-
-    domas >>= type -> return kolp
-
-    return externalFuncDecl2(varDecl, unless)
+newtype Foom = {
+    dada: string[]
 }
+
+makeImportSpec :: String -> ImportSpecifier
+makeImportSpec = name -> ({
+    type: 'ImportSpecifier',
+    imported: {
+        type: 'Identifier',
+        name
+    },
+    local: {
+        type: 'Identifier',
+        name
+    }
+})
+
 

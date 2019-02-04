@@ -1,136 +1,176 @@
+// @flow
 /**
- * @file             : /Users/olegkirichenko/projects/divsense/funkrit/dist/ast-travel.js
+ * @file             : ast-travel.js
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
- * Date              : 31.01.2019
- * Last Modified Date: 01.02.2019
+ * Date              : 02.02.2019
+ * Last Modified Date: 02.02.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
-const { reduce, isNil, concat, call, has, prop } = require('ramda')
+const { reduce, filter, map, compose, identity, reject, isNil, concat, call, has, prop } = require('ramda')
 
-const travel = (state, node) => {
-    const {result, parent, visitors} = state
-    const type = prop('type', node)
+/*::
 
-    const _result_ = has(type, visitors) ? call( prop(type, visitors), node, result, parent) : result
+import type {Node, Statement} from '../libs/ast-types.js'
 
-    const nodes = getChildNodes(type, node)
+type ParentProperty = string
+type ParentType = string
 
-    return reduce(travel, {result: _result_, parent: type, visitors}, nodes)
+export type Result = any
+export type Context = {
+    result: Result,
+    node: Node,
+    parentType: string,
+    parentProperty: string
 }
 
-function getChildNodes(type, node) {
+export type Visitors = {
+    [string]: Context => Result
+}
 
-    switch(type) {
+export type PNode = {
+    property: string,
+    node: Node
+}
+
+export type State = {
+    result: Result,
+    parentType: string,
+    visitors: Visitors
+}
+
+ */
+
+const travel /* : (State, PNode) => State  */ = (state, pnode) => {
+    const {result, parentType, visitors} = state
+    const {property, node} = pnode
+    const type = node.type
+
+    const resultA = has(type, visitors) ? prop(type, visitors)({result, node, parentType, parentProperty: property}) : result
+
+    const pnodes = getChildNodes(node)
+
+    const { result: resultB } = reduce(travel, {result: resultA, parentType: type, visitors}, pnodes)
+
+    return { result: resultB, parentType, visitors }
+}
+
+const pnode /* : string => Node => PNode */ = property => node => ({property, node})
+const apnode /* : (string, ?Node) => PNode[] */ = (property, node) => node ? [{property, node}] : []
+
+function getChildNodes(node /* : Node */) /* : PNode[]  */ {
+
+    switch(node.type) {
         case 'Program':
-            return node.body
+            return map(pnode('body'), node.body)
 
         case 'BlockStatement':
-            return node.body || []
+            return map(pnode('body'), node.body || [])
 
         case 'ExpressionStatement':
-            return [node.expression]
+            return apnode('expression', node.expression)
 
         case 'IfStatement':
-            const alt = node.alternate
-            return concat([ node.test, node.consequent ], isNil(alt) ? [] : [alt])
+            const if_start = concat(apnode('test', node.test), apnode('consequent', node.consequent))
+            const if_alt = apnode('alternate', node.alternate)
+            return concat(if_start, if_alt)
 
         case 'SwitchStatement':
-            return concat([node.discriminant], node.cases)
+            return concat(apnode('discriminant', node.discriminant), map(pnode('cases'), node.cases))
 
         case 'SwitchCase':
-            const tst = node.test
-            return concat(isNil(tst) ? [] : [tst], node.consequent)
+            const tst = apnode('test', node.test)
+            const cons = map(pnode('consequent'), node.consequent)
+            return concat(tst, cons)
 
         case 'ReturnStatement':
-            const arg = node.argument
-            return isNil(arg) ? [] : [arg]
+            return apnode('argument', node.argument)
 
         case 'FunctionExpression':
         case 'FunctionDeclaration':
-            const nid = node.id
-            const params = node.params
-            const body = node.body
-            const head = concat(isNil(nid) ? [] : [nid], isNil(params) ? [] : params)
-            return concat(head, body)
+            const nid = apnode('id', node.id)
+            const params = map(pnode('params'), node.params || [])
+            const body = apnode('body', node.body)
+            const fdec = concat(nid, params)
+            return concat(fdec, body)
 
         case 'VariableDeclaration':
-            return node.declarations
+            return map(pnode('declarations'), node.declarations)
 
         case 'VariableDeclarator':
-            const nid = node.id
-            const init = node.init
-            return concat([nid], isNil(init) ? [] : [init])
+            const vnid = apnode('id', node.id)
+            const vinit = apnode('init', node.init)
+            return concat(vnid, vinit)
 
         case 'ArrowFunctionExpression':
-            return concat(node.params || [], node.body)
+            const afparams = map(pnode('params'), node.params || [])
+            const afbody = apnode('body', node.body)
+            return concat(afparams, afbody)
 
         case 'ArrayPattern':
         case 'ArrayExpression':
-            return reject(isNil, node.elements)
+            const nodes = node.elements.filter(Boolean)
+            return map(pnode('elements'), nodes)
 
         case 'ObjectExpression':
-            return node.properties
+            return map(pnode('properties'), node.properties)
 
         case 'Property':
-            const key = [node.key]
-            const vaue = node.shorthand ? [] ? [node.value]
+            const key = apnode('key', node.key)
+            const value = node.shorthand ? [] : apnode('value', node.value)
             return concat(key, value)
-
-        case 'SequenceExpression':
-            return node.expressions
 
         case 'SpreadElement':
         case 'RestElement':
         case 'UpdateExpression':
         case 'UnaryExpression':
-            return [node.argument]
+            return apnode('argument', node.argument)
 
         case 'LogicalExpression':
         case 'BinaryExpression':
         case 'AssignmentExpression':
         case 'AssignmentPattern':
-            return [node.left, node.right]
+            return concat(apnode('left', node.left), apnode('right', node.right))
 
         case 'ConditionalExpression':
-            return [node.test, node.consequent, node.alternate]
+            return concat( concat(apnode('test', node.test), apnode('consequent', node.consequent)), apnode('alternate', node.alternate))
 
         case 'CallExpression':
-            return concat([node.callee], node['arguments'])
+            return concat(apnode('callee', node.callee), map(pnode('arguments'), node['arguments']))
 
         case 'MemberExpression':
-            return [node.object, node.property]
+            return concat(apnode('object', node.object), apnode('property', node.property))
 
         case 'ImportDeclaration':
-            return concat(node.specifiers, [node.source])
+            return concat(map(pnode('specifiers'), node.specifiers), apnode('source', node.source))
 
         case 'ImportDefaultSpecifier':
         case 'ImportNamespaceSpecifier':
-            return [node.local]
+            return apnode('local', node.local)
 
         case 'ImportSpecifier':
-            return [node.imported, node.local]
+            return concat(apnode('imported', node.imported), apnode('local', node.local))
     
         case 'ExportDefaultDeclaration':
-            return [node.declaration]
+            return apnode('declaratio', node.declaration)
     
         case 'ExportNamedDeclaration':
-            const decl = node.declaration
-            const src = node.source
-            const head = conact(isNil(decl) ? [] : [decl], node.specifiers)
-            return concat(head, isNil(src) ? [] : [src])
+            const decl = apnode('declaratio', node.declaration)
+            const src = apnode('source', node.source)
+            const head = concat(decl, map(pnode('specifiers'), node.specifiers))
+            return concat(head, src)
 
         case 'ExportSpecifier':
-            return [node.local, node.exported]
+            return concat(apnode('local', node.local), apnode('exported', node.exported))
 
         case 'ExportAllDeclaration':
-            return [node.source]
+            return apnode('source', node.source)
     
         case 'MethodDefinition':
-            return [node.key, node.value]
+            return concat(apnode('key', node.key), apnode('value', node.value))
 
         case 'ObjectPattern':
-            return node.properties
+            return map(pnode('properties'), node.properties)
     }
     return []
 }

@@ -1,9 +1,12 @@
 [ignore]
-<PROJECT_ROOT>/build
-<PROJECT_ROOT>/dist
-<PROJECT_ROOT>/node_modules
-<PROJECT_ROOT>/temp
-<PROJECT_ROOT>/test
+.*/node_modules/.*
+<PROJECT_ROOT>/bin/
+<PROJECT_ROOT>/src/
+<PROJECT_ROOT>/build/
+<PROJECT_ROOT>/dist/
+<PROJECT_ROOT>/temp/
+<PROJECT_ROOT>/test/
+<PROJECT_ROOT>/*.js
 
 [include]
 

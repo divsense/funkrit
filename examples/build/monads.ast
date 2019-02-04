@@ -1,556 +1,222 @@
-F, T, __, add, addIndex, adjust, all, allPass, always, and ...
 {
   "type": "Program",
   "body": [
     {
-      "type": "FunctionDeclaration",
-      "id": {
-        "type": "Identifier",
-        "name": "externalFuncDecl2",
-        "loc": {
-          "start": {
-            "offset": 52,
-            "line": 4,
-            "column": 1
-          },
-          "end": {
-            "offset": 69,
-            "line": 4,
-            "column": 18
-          }
-        }
-      },
-      "generator": false,
-      "expression": false,
-      "params": [
+      "type": "VariableDeclaration",
+      "declarations": [
         {
-          "type": "Identifier",
-          "name": "xxx",
-          "loc": {
-            "start": {
-              "offset": 72,
-              "line": 4,
-              "column": 21
-            },
-            "end": {
-              "offset": 75,
-              "line": 4,
-              "column": 24
-            }
+          "type": "VariableDeclarator",
+          "id": {
+            "type": "ObjectPattern",
+            "properties": [
+              {
+                "type": "Property",
+                "method": false,
+                "shorthand": true,
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "name": "filter"
+                },
+                "value": {
+                  "type": "Identifier",
+                  "name": "filter"
+                },
+                "kind": "init"
+              },
+              {
+                "type": "Property",
+                "method": false,
+                "shorthand": true,
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "name": "gt"
+                },
+                "value": {
+                  "type": "Identifier",
+                  "name": "gt"
+                },
+                "kind": "init"
+              },
+              {
+                "type": "Property",
+                "method": false,
+                "shorthand": true,
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "name": "isNil"
+                },
+                "value": {
+                  "type": "Identifier",
+                  "name": "isNil"
+                },
+                "kind": "init"
+              }
+            ]
           },
-          "comments": [
-            {
-              "type": "Block",
-              "value": ": number"
-            }
-          ]
+          "init": {
+            "type": "CallExpression",
+            "callee": {
+              "type": "Identifier",
+              "name": "require"
+            },
+            "arguments": [
+              {
+                "type": "Literal",
+                "value": "ramda"
+              }
+            ]
+          }
         }
       ],
-      "body": {
-        "type": "BlockStatement",
-        "body": [
-          {
-            "type": "ReturnStatement",
-            "argument": {
-              "type": "BinaryExpression",
-              "operator": "+",
-              "left": {
-                "type": "Identifier",
-                "name": "xxx",
-                "loc": {
-                  "start": {
-                    "offset": 79,
-                    "line": 4,
-                    "column": 28
-                  },
-                  "end": {
-                    "offset": 82,
-                    "line": 4,
-                    "column": 31
-                  }
-                }
-              },
-              "right": {
-                "type": "Literal",
-                "value": 2
-              }
-            }
-          }
-        ],
-        "comments": [
-          {
-            "type": "Block",
-            "value": ": number"
-          }
-        ]
-      }
+      "kind": "const"
     },
     {
-      "type": "FunctionDeclaration",
-      "id": {
-        "type": "Identifier",
-        "name": "externalFuncDecl1",
-        "loc": {
-          "start": {
-            "offset": 147,
-            "line": 7,
-            "column": 1
-          },
-          "end": {
-            "offset": 164,
-            "line": 7,
-            "column": 18
-          }
-        }
-      },
-      "generator": false,
-      "expression": false,
-      "params": [
+      "type": "VariableDeclaration",
+      "declarations": [
         {
-          "type": "Identifier",
-          "name": "extParam1",
-          "loc": {
-            "start": {
-              "offset": 168,
-              "line": 7,
-              "column": 22
+          "type": "VariableDeclarator",
+          "id": {
+            "type": "Identifier",
+            "name": "foo",
+            "loc": {
+              "start": {
+                "offset": 40,
+                "line": 4,
+                "column": 1
+              },
+              "end": {
+                "offset": 43,
+                "line": 4,
+                "column": 4
+              }
             },
-            "end": {
-              "offset": 177,
-              "line": 7,
-              "column": 31
-            }
+            "comments": [
+              {
+                "type": "Block",
+                "value": ": number[] => number[]"
+              }
+            ]
           },
-          "comments": [
-            {
-              "type": "Block",
-              "value": ": number"
-            }
-          ]
-        },
-        {
-          "type": "Identifier",
-          "name": "extParam2",
-          "loc": {
-            "start": {
-              "offset": 179,
-              "line": 7,
-              "column": 33
+          "init": {
+            "type": "CallExpression",
+            "callee": {
+              "type": "Identifier",
+              "name": "filter",
+              "loc": {
+                "start": {
+                  "offset": 46,
+                  "line": 4,
+                  "column": 7
+                },
+                "end": {
+                  "offset": 52,
+                  "line": 4,
+                  "column": 13
+                }
+              }
             },
-            "end": {
-              "offset": 188,
-              "line": 7,
-              "column": 42
-            }
-          },
-          "comments": [
-            {
-              "type": "Block",
-              "value": ": number"
-            }
-          ]
-        }
-      ],
-      "body": {
-        "type": "BlockStatement",
-        "body": [
-          {
-            "type": "ReturnStatement",
-            "argument": {
-              "type": "ArrowFunctionExpression",
-              "params": [
-                {
+            "arguments": [
+              {
+                "type": "CallExpression",
+                "callee": {
                   "type": "Identifier",
-                  "name": "extInnerParam",
+                  "name": "gt",
                   "loc": {
                     "start": {
-                      "offset": 193,
-                      "line": 7,
-                      "column": 47
+                      "offset": 53,
+                      "line": 4,
+                      "column": 14
                     },
                     "end": {
-                      "offset": 206,
-                      "line": 7,
-                      "column": 60
+                      "offset": 55,
+                      "line": 4,
+                      "column": 16
                     }
                   }
-                }
-              ],
-              "body": {
-                "type": "BlockStatement",
-                "body": [
+                },
+                "arguments": [
                   {
-                    "type": "VariableDeclaration",
-                    "declarations": [
-                      {
-                        "type": "VariableDeclarator",
-                        "id": {
-                          "type": "Identifier",
-                          "name": "varDecl",
-                          "loc": {
-                            "start": {
-                              "offset": 217,
-                              "line": 9,
-                              "column": 5
-                            },
-                            "end": {
-                              "offset": 224,
-                              "line": 9,
-                              "column": 12
-                            }
-                          }
-                        },
-                        "init": {
-                          "type": "Literal",
-                          "value": "str"
-                        }
-                      }
-                    ],
-                    "kind": "const"
-                  },
-                  {
-                    "type": "VariableDeclaration",
-                    "declarations": [
-                      {
-                        "type": "VariableDeclarator",
-                        "id": {
-                          "type": "Identifier",
-                          "name": "objDecl",
-                          "loc": {
-                            "start": {
-                              "offset": 238,
-                              "line": 11,
-                              "column": 5
-                            },
-                            "end": {
-                              "offset": 245,
-                              "line": 11,
-                              "column": 12
-                            }
-                          }
-                        },
-                        "init": {
-                          "type": "ObjectExpression",
-                          "properties": [
-                            {
-                              "type": "Property",
-                              "key": {
-                                "type": "Identifier",
-                                "name": "keyObj",
-                                "loc": {
-                                  "start": {
-                                    "offset": 258,
-                                    "line": 12,
-                                    "column": 9
-                                  },
-                                  "end": {
-                                    "offset": 264,
-                                    "line": 12,
-                                    "column": 15
-                                  }
-                                }
-                              },
-                              "value": {
-                                "type": "Identifier",
-                                "name": "varObj",
-                                "loc": {
-                                  "start": {
-                                    "offset": 266,
-                                    "line": 12,
-                                    "column": 17
-                                  },
-                                  "end": {
-                                    "offset": 272,
-                                    "line": 12,
-                                    "column": 23
-                                  }
-                                }
-                              },
-                              "kind": "init"
-                            }
-                          ]
-                        }
-                      }
-                    ],
-                    "kind": "const"
-                  },
-                  {
-                    "type": "VariableDeclaration",
-                    "declarations": [
-                      {
-                        "type": "VariableDeclarator",
-                        "id": {
-                          "type": "Identifier",
-                          "name": "arrDecl",
-                          "loc": {
-                            "start": {
-                              "offset": 284,
-                              "line": 15,
-                              "column": 5
-                            },
-                            "end": {
-                              "offset": 291,
-                              "line": 15,
-                              "column": 12
-                            }
-                          }
-                        },
-                        "init": {
-                          "type": "ArrayExpression",
-                          "elements": [
-                            {
-                              "type": "Identifier",
-                              "name": "arrElem1",
-                              "loc": {
-                                "start": {
-                                  "offset": 295,
-                                  "line": 15,
-                                  "column": 16
-                                },
-                                "end": {
-                                  "offset": 303,
-                                  "line": 15,
-                                  "column": 24
-                                }
-                              }
-                            },
-                            {
-                              "type": "Identifier",
-                              "name": "arrElem2",
-                              "loc": {
-                                "start": {
-                                  "offset": 305,
-                                  "line": 15,
-                                  "column": 26
-                                },
-                                "end": {
-                                  "offset": 313,
-                                  "line": 15,
-                                  "column": 34
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    ],
-                    "kind": "const"
-                  },
-                  {
-                    "type": "FunctionDeclaration",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "localFuncDecl",
-                      "loc": {
-                        "start": {
-                          "offset": 320,
-                          "line": 17,
-                          "column": 5
-                        },
-                        "end": {
-                          "offset": 333,
-                          "line": 17,
-                          "column": 18
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "expression": false,
-                    "params": [
-                      {
-                        "type": "Identifier",
-                        "name": "locParam",
-                        "loc": {
-                          "start": {
-                            "offset": 336,
-                            "line": 17,
-                            "column": 21
-                          },
-                          "end": {
-                            "offset": 344,
-                            "line": 17,
-                            "column": 29
-                          }
-                        }
-                      }
-                    ],
-                    "body": {
-                      "type": "BlockStatement",
-                      "body": [
-                        {
-                          "type": "ReturnStatement",
-                          "argument": {
-                            "type": "ArrowFunctionExpression",
-                            "params": [
-                              {
-                                "type": "Identifier",
-                                "name": "locInnerParam",
-                                "loc": {
-                                  "start": {
-                                    "offset": 348,
-                                    "line": 17,
-                                    "column": 33
-                                  },
-                                  "end": {
-                                    "offset": 361,
-                                    "line": 17,
-                                    "column": 46
-                                  }
-                                }
-                              }
-                            ],
-                            "body": {
-                              "type": "BlockStatement",
-                              "body": [
-                                {
-                                  "type": "VariableDeclaration",
-                                  "declarations": [
-                                    {
-                                      "type": "VariableDeclarator",
-                                      "id": {
-                                        "type": "Identifier",
-                                        "name": "locFuncVar",
-                                        "loc": {
-                                          "start": {
-                                            "offset": 375,
-                                            "line": 18,
-                                            "column": 9
-                                          },
-                                          "end": {
-                                            "offset": 385,
-                                            "line": 18,
-                                            "column": 19
-                                          }
-                                        }
-                                      },
-                                      "init": {
-                                        "type": "Literal",
-                                        "value": 123
-                                      }
-                                    }
-                                  ],
-                                  "kind": "const"
-                                },
-                                {
-                                  "type": "ReturnStatement",
-                                  "argument": {
-                                    "type": "BinaryExpression",
-                                    "operator": "+",
-                                    "left": {
-                                      "type": "BinaryExpression",
-                                      "operator": "+",
-                                      "left": {
-                                        "type": "Identifier",
-                                        "name": "locParam",
-                                        "loc": {
-                                          "start": {
-                                            "offset": 407,
-                                            "line": 19,
-                                            "column": 16
-                                          },
-                                          "end": {
-                                            "offset": 415,
-                                            "line": 19,
-                                            "column": 24
-                                          }
-                                        }
-                                      },
-                                      "right": {
-                                        "type": "Identifier",
-                                        "name": "locInnerParam",
-                                        "loc": {
-                                          "start": {
-                                            "offset": 418,
-                                            "line": 19,
-                                            "column": 27
-                                          },
-                                          "end": {
-                                            "offset": 431,
-                                            "line": 19,
-                                            "column": 40
-                                          }
-                                        }
-                                      }
-                                    },
-                                    "right": {
-                                      "type": "Identifier",
-                                      "name": "locFuncVar",
-                                      "loc": {
-                                        "start": {
-                                          "offset": 434,
-                                          "line": 19,
-                                          "column": 43
-                                        },
-                                        "end": {
-                                          "offset": 444,
-                                          "line": 19,
-                                          "column": 53
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            },
-                            "expression": false
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "ReturnStatement",
-                    "argument": {
-                      "type": "CallExpression",
-                      "callee": {
-                        "type": "Identifier",
-                        "name": "externalFuncDecl2",
-                        "loc": {
-                          "start": {
-                            "offset": 463,
-                            "line": 22,
-                            "column": 12
-                          },
-                          "end": {
-                            "offset": 480,
-                            "line": 22,
-                            "column": 29
-                          }
-                        }
-                      },
-                      "arguments": [
-                        {
-                          "type": "Identifier",
-                          "name": "varDecl",
-                          "loc": {
-                            "start": {
-                              "offset": 481,
-                              "line": 22,
-                              "column": 30
-                            },
-                            "end": {
-                              "offset": 488,
-                              "line": 22,
-                              "column": 37
-                            }
-                          }
-                        }
-                      ]
-                    }
+                    "type": "Literal",
+                    "value": 0
                   }
                 ]
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "VariableDeclaration",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "id": {
+            "type": "Identifier",
+            "name": "bar",
+            "loc": {
+              "start": {
+                "offset": 89,
+                "line": 7,
+                "column": 1
               },
-              "expression": false
-            }
+              "end": {
+                "offset": 92,
+                "line": 7,
+                "column": 4
+              }
+            },
+            "comments": [
+              {
+                "type": "Block",
+                "value": ": number[] => number[]"
+              }
+            ]
+          },
+          "init": {
+            "type": "CallExpression",
+            "callee": {
+              "type": "Identifier",
+              "name": "filter",
+              "loc": {
+                "start": {
+                  "offset": 95,
+                  "line": 7,
+                  "column": 7
+                },
+                "end": {
+                  "offset": 101,
+                  "line": 7,
+                  "column": 13
+                }
+              }
+            },
+            "arguments": [
+              {
+                "type": "Identifier",
+                "name": "isNil",
+                "loc": {
+                  "start": {
+                    "offset": 102,
+                    "line": 7,
+                    "column": 14
+                  },
+                  "end": {
+                    "offset": 107,
+                    "line": 7,
+                    "column": 19
+                  }
+                }
+              }
+            ]
           }
-        ],
-        "comments": [
-          {
-            "type": "Block",
-            "value": ": string => boolean"
-          }
-        ]
-      }
+        }
+      ],
+      "kind": "const"
     },
     {
       "type": "ExportNamedDeclaration",
@@ -561,9 +227,9 @@ F, T, __, add, addIndex, adjust, all, allPass, always, and ...
           "column": 1
         },
         "end": {
-          "offset": 12,
+          "offset": 10,
           "line": 1,
-          "column": 13
+          "column": 11
         }
       },
       "declaration": null,
@@ -573,7 +239,7 @@ F, T, __, add, addIndex, adjust, all, allPass, always, and ...
           "type": "ExportSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "name1",
+            "name": "foo",
             "loc": {
               "start": {
                 "offset": 7,
@@ -581,15 +247,15 @@ F, T, __, add, addIndex, adjust, all, allPass, always, and ...
                 "column": 8
               },
               "end": {
-                "offset": 12,
+                "offset": 10,
                 "line": 1,
-                "column": 13
+                "column": 11
               }
             }
           },
           "exported": {
             "type": "Identifier",
-            "name": "name1",
+            "name": "foo",
             "loc": {
               "start": {
                 "offset": 7,
@@ -597,9 +263,9 @@ F, T, __, add, addIndex, adjust, all, allPass, always, and ...
                 "column": 8
               },
               "end": {
-                "offset": 12,
+                "offset": 10,
                 "line": 1,
-                "column": 13
+                "column": 11
               }
             }
           }
