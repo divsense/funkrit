@@ -16,41 +16,11 @@
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "name": "filter"
+                  "name": "concat"
                 },
                 "value": {
                   "type": "Identifier",
-                  "name": "filter"
-                },
-                "kind": "init"
-              },
-              {
-                "type": "Property",
-                "method": false,
-                "shorthand": true,
-                "computed": false,
-                "key": {
-                  "type": "Identifier",
-                  "name": "gt"
-                },
-                "value": {
-                  "type": "Identifier",
-                  "name": "gt"
-                },
-                "kind": "init"
-              },
-              {
-                "type": "Property",
-                "method": false,
-                "shorthand": true,
-                "computed": false,
-                "key": {
-                  "type": "Identifier",
-                  "name": "isNil"
-                },
-                "value": {
-                  "type": "Identifier",
-                  "name": "isNil"
+                  "name": "concat"
                 },
                 "kind": "init"
               }
@@ -79,24 +49,22 @@
         {
           "type": "VariableDeclarator",
           "id": {
-            "type": "Identifier",
-            "name": "foo",
-            "loc": {
-              "start": {
-                "offset": 40,
-                "line": 4,
-                "column": 1
-              },
-              "end": {
-                "offset": 43,
-                "line": 4,
-                "column": 4
-              }
-            },
-            "comments": [
+            "type": "ObjectPattern",
+            "properties": [
               {
-                "type": "Block",
-                "value": ": number[] => number[]"
+                "type": "Property",
+                "method": false,
+                "shorthand": true,
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "name": "sin"
+                },
+                "value": {
+                  "type": "Identifier",
+                  "name": "sin"
+                },
+                "kind": "init"
               }
             ]
           },
@@ -104,45 +72,12 @@
             "type": "CallExpression",
             "callee": {
               "type": "Identifier",
-              "name": "filter",
-              "loc": {
-                "start": {
-                  "offset": 46,
-                  "line": 4,
-                  "column": 7
-                },
-                "end": {
-                  "offset": 52,
-                  "line": 4,
-                  "column": 13
-                }
-              }
+              "name": "require"
             },
             "arguments": [
               {
-                "type": "CallExpression",
-                "callee": {
-                  "type": "Identifier",
-                  "name": "gt",
-                  "loc": {
-                    "start": {
-                      "offset": 53,
-                      "line": 4,
-                      "column": 14
-                    },
-                    "end": {
-                      "offset": 55,
-                      "line": 4,
-                      "column": 16
-                    }
-                  }
-                },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "value": 0
-                  }
-                ]
+                "type": "Literal",
+                "value": "../../libs/math.js"
               }
             ]
           }
@@ -156,61 +91,19 @@
         {
           "type": "VariableDeclarator",
           "id": {
-            "type": "Identifier",
-            "name": "bar",
-            "loc": {
-              "start": {
-                "offset": 89,
-                "line": 7,
-                "column": 1
-              },
-              "end": {
-                "offset": 92,
-                "line": 7,
-                "column": 4
-              }
-            },
-            "comments": [
-              {
-                "type": "Block",
-                "value": ": number[] => number[]"
-              }
-            ]
+            "type": "ObjectPattern",
+            "properties": []
           },
           "init": {
             "type": "CallExpression",
             "callee": {
               "type": "Identifier",
-              "name": "filter",
-              "loc": {
-                "start": {
-                  "offset": 95,
-                  "line": 7,
-                  "column": 7
-                },
-                "end": {
-                  "offset": 101,
-                  "line": 7,
-                  "column": 13
-                }
-              }
+              "name": "require"
             },
             "arguments": [
               {
-                "type": "Identifier",
-                "name": "isNil",
-                "loc": {
-                  "start": {
-                    "offset": 102,
-                    "line": 7,
-                    "column": 14
-                  },
-                  "end": {
-                    "offset": 107,
-                    "line": 7,
-                    "column": 19
-                  }
-                }
+                "type": "Literal",
+                "value": "../../flow-libs/ast-types.js"
               }
             ]
           }
@@ -219,58 +112,463 @@
       "kind": "const"
     },
     {
-      "type": "ExportNamedDeclaration",
-      "loc": {
-        "start": {
-          "offset": 0,
-          "line": 1,
-          "column": 1
-        },
-        "end": {
-          "offset": 10,
-          "line": 1,
-          "column": 11
-        }
-      },
-      "declaration": null,
-      "source": null,
-      "specifiers": [
-        {
-          "type": "ExportSpecifier",
-          "local": {
-            "type": "Identifier",
-            "name": "foo",
-            "loc": {
-              "start": {
-                "offset": 7,
-                "line": 1,
-                "column": 8
-              },
-              "end": {
-                "offset": 10,
-                "line": 1,
-                "column": 11
-              }
-            }
+      "type": "FunctionDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "moon",
+        "loc": {
+          "start": {
+            "offset": 221,
+            "line": 16,
+            "column": 1
           },
-          "exported": {
-            "type": "Identifier",
-            "name": "foo",
-            "loc": {
-              "start": {
-                "offset": 7,
-                "line": 1,
-                "column": 8
-              },
-              "end": {
-                "offset": 10,
-                "line": 1,
-                "column": 11
-              }
-            }
+          "end": {
+            "offset": 225,
+            "line": 16,
+            "column": 5
           }
         }
-      ]
+      },
+      "generator": false,
+      "expression": false,
+      "params": [
+        {
+          "type": "Identifier",
+          "name": "name",
+          "loc": {
+            "start": {
+              "offset": 228,
+              "line": 16,
+              "column": 8
+            },
+            "end": {
+              "offset": 232,
+              "line": 16,
+              "column": 12
+            }
+          },
+          "comments": [
+            {
+              "type": "Block",
+              "value": ": string"
+            }
+          ]
+        }
+      ],
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "ReturnStatement",
+            "argument": {
+              "type": "ObjectExpression",
+              "properties": [
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "type",
+                    "loc": {
+                      "start": {
+                        "offset": 259,
+                        "line": 18,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 263,
+                        "line": 18,
+                        "column": 13
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": "Identifier"
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "name",
+                    "loc": {
+                      "start": {
+                        "offset": 287,
+                        "line": 19,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 291,
+                        "line": 19,
+                        "column": 13
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "CallExpression",
+                    "callee": {
+                      "type": "Identifier",
+                      "name": "moonit",
+                      "loc": {
+                        "start": {
+                          "offset": 293,
+                          "line": 19,
+                          "column": 15
+                        },
+                        "end": {
+                          "offset": 299,
+                          "line": 19,
+                          "column": 21
+                        }
+                      }
+                    },
+                    "arguments": [
+                      {
+                        "type": "Identifier",
+                        "name": "name",
+                        "loc": {
+                          "start": {
+                            "offset": 300,
+                            "line": 19,
+                            "column": 22
+                          },
+                          "end": {
+                            "offset": 304,
+                            "line": 19,
+                            "column": 26
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "start",
+                    "loc": {
+                      "start": {
+                        "offset": 315,
+                        "line": 20,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 320,
+                        "line": 20,
+                        "column": 14
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": 0
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "end",
+                    "loc": {
+                      "start": {
+                        "offset": 333,
+                        "line": 21,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 336,
+                        "line": 21,
+                        "column": 12
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": 0
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "loc",
+                    "loc": {
+                      "start": {
+                        "offset": 349,
+                        "line": 22,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 352,
+                        "line": 22,
+                        "column": 12
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "ObjectExpression",
+                    "properties": [
+                      {
+                        "type": "Property",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "end",
+                          "loc": {
+                            "start": {
+                              "offset": 365,
+                              "line": 23,
+                              "column": 10
+                            },
+                            "end": {
+                              "offset": 368,
+                              "line": 23,
+                              "column": 13
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "ObjectExpression",
+                          "properties": [
+                            {
+                              "type": "Property",
+                              "key": {
+                                "type": "Identifier",
+                                "name": "column",
+                                "loc": {
+                                  "start": {
+                                    "offset": 371,
+                                    "line": 23,
+                                    "column": 16
+                                  },
+                                  "end": {
+                                    "offset": 377,
+                                    "line": 23,
+                                    "column": 22
+                                  }
+                                }
+                              },
+                              "value": {
+                                "type": "Literal",
+                                "value": 0
+                              },
+                              "kind": "init"
+                            },
+                            {
+                              "type": "Property",
+                              "key": {
+                                "type": "Identifier",
+                                "name": "line",
+                                "loc": {
+                                  "start": {
+                                    "offset": 382,
+                                    "line": 23,
+                                    "column": 27
+                                  },
+                                  "end": {
+                                    "offset": 386,
+                                    "line": 23,
+                                    "column": 31
+                                  }
+                                }
+                              },
+                              "value": {
+                                "type": "Literal",
+                                "value": 0
+                              },
+                              "kind": "init"
+                            }
+                          ]
+                        },
+                        "kind": "init"
+                      },
+                      {
+                        "type": "Property",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "start",
+                          "loc": {
+                            "start": {
+                              "offset": 401,
+                              "line": 24,
+                              "column": 10
+                            },
+                            "end": {
+                              "offset": 406,
+                              "line": 24,
+                              "column": 15
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "ObjectExpression",
+                          "properties": [
+                            {
+                              "type": "Property",
+                              "key": {
+                                "type": "Identifier",
+                                "name": "column",
+                                "loc": {
+                                  "start": {
+                                    "offset": 409,
+                                    "line": 24,
+                                    "column": 18
+                                  },
+                                  "end": {
+                                    "offset": 415,
+                                    "line": 24,
+                                    "column": 24
+                                  }
+                                }
+                              },
+                              "value": {
+                                "type": "Literal",
+                                "value": 0
+                              },
+                              "kind": "init"
+                            },
+                            {
+                              "type": "Property",
+                              "key": {
+                                "type": "Identifier",
+                                "name": "line",
+                                "loc": {
+                                  "start": {
+                                    "offset": 420,
+                                    "line": 24,
+                                    "column": 29
+                                  },
+                                  "end": {
+                                    "offset": 424,
+                                    "line": 24,
+                                    "column": 33
+                                  }
+                                }
+                              },
+                              "value": {
+                                "type": "Literal",
+                                "value": 0
+                              },
+                              "kind": "init"
+                            }
+                          ]
+                        },
+                        "kind": "init"
+                      }
+                    ]
+                  },
+                  "kind": "init"
+                }
+              ]
+            }
+          }
+        ],
+        "comments": [
+          {
+            "type": "Block",
+            "value": ": Node"
+          }
+        ]
+      }
+    },
+    {
+      "type": "VariableDeclaration",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "id": {
+            "type": "Identifier",
+            "name": "moonit",
+            "loc": {
+              "start": {
+                "offset": 475,
+                "line": 31,
+                "column": 1
+              },
+              "end": {
+                "offset": 481,
+                "line": 31,
+                "column": 7
+              }
+            },
+            "comments": [
+              {
+                "type": "Block",
+                "value": ": string => string"
+              }
+            ]
+          },
+          "init": {
+            "type": "CallExpression",
+            "callee": {
+              "type": "Identifier",
+              "name": "concat",
+              "loc": {
+                "start": {
+                  "offset": 484,
+                  "line": 31,
+                  "column": 10
+                },
+                "end": {
+                  "offset": 490,
+                  "line": 31,
+                  "column": 16
+                }
+              }
+            },
+            "arguments": [
+              {
+                "type": "Literal",
+                "value": "moon"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "ExpressionStatement",
+      "expression": {
+        "type": "AssignmentExpression",
+        "operator": "=",
+        "left": {
+          "type": "MemberExpression",
+          "computed": false,
+          "object": {
+            "type": "Identifier",
+            "name": "module"
+          },
+          "property": {
+            "type": "Identifier",
+            "name": "exports"
+          }
+        },
+        "right": {
+          "type": "ObjectExpression",
+          "properties": [
+            {
+              "type": "Property",
+              "key": {
+                "type": "Identifier",
+                "name": "moon"
+              },
+              "computed": false,
+              "value": {
+                "type": "Identifier",
+                "name": "moon"
+              },
+              "kind": "init",
+              "method": false,
+              "shorthand": true
+            }
+          ]
+        }
+      }
     }
   ],
   "sourceType": "module",
@@ -278,6 +576,14 @@
     {
       "type": "Line",
       "value": " @flow"
+    },
+    {
+      "type": "Block",
+      "value": "::\nexport type Foom = {fomm:number};\ntype LocalNON = {fomm:number};\n"
+    },
+    {
+      "type": "Line",
+      "value": ":: import type { Identifier,Node } from \"../../flow-libs/ast-types.js\""
     }
   ]
 }

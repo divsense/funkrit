@@ -1,4 +1,5 @@
-/**
+/** @flow
+ *
  * @file             : dist/ast-node.js
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
@@ -7,9 +8,10 @@
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 const { identity, append, reduce, objOf, keys, not, any, both, pathEq, prepend, over, concat, lensProp, nth, indexOf, always, filter, map, compose, prop, path, propEq, find, assoc } = require('ramda')
-const {parse} = require('../build/peg-parser.js')
-const {Right} = require('./either.js')
+const { parse } = require('../build/peg-parser.js')
 const { selectUsedNames } = require('./selectUsedNames.js')
+const { importTypes, exportTypes } = require('./types.js')
+const { export2require, import2require } = require('./torequire.js')
 
 const ident = compose(
     compose(assoc('type', 'Identifier'), objOf('name'))
@@ -35,6 +37,7 @@ const fullImport = (name, imps) => ({
 // addRamdaImport :: AST -> AST
 const addRamdaImport = over(lensProp('body'), prepend(fullImport('ramda', keys(require('ramda')))))
 
+/*
 //noExplicitRamdaImport :: AST -> Bool
 const noExplicitRamdaImport = compose(
     not,
@@ -48,70 +51,7 @@ const addRamda = () => {
     const names = keys(require('ramda')) || []
     return { libName, libPath, names }
 }
+*/
 
-const importToRequire = over(lensProp('body'), reduce((m,a) => {
-
-    if(a.type === 'ImportDeclaration') {
-        const req = {
-            type: "VariableDeclaration",
-            declarations: [
-                {
-                    type: "VariableDeclarator",
-                    id: {
-                        type: "ObjectPattern",
-                        properties: map(s => {
-                            return {
-                                type: "Property",
-                                method: false,
-                                shorthand: s.imported.name === s.local.name,
-                                computed: false,
-                                key: {
-                                    type: "Identifier",
-                                    name: s.imported.name
-                                },
-                                value: {
-                                    type: "Identifier",
-                                    name: s.local.name
-                                },
-                                kind: "init"
-                            }
-
-                        }, a.specifiers)
-                    },
-                    init: {
-                        type: "CallExpression",
-                        callee: {
-                            type: "Identifier",
-                            name: "require"
-                        },
-                        arguments: [
-                            {
-                                type: "Literal",
-                                value: a.source.value,
-                                raw: a.source.raw
-                            }
-                        ]
-                    }
-                }
-            ],
-            kind: "const"
-        }
-        return append(req, m)
-    }
-    return append(a, m)
-}, []))
-
-const test = x => {
-
-    const mm = Right(12)
-
-    console.log("/*")
-    console.log(mm)
-    console.log("*/")
-
-    return x
-}
-
-
-exports.parse = compose(/* test, */ importToRequire, selectUsedNames, addRamdaImport, parse)
+exports.parse = compose( export2require, import2require, importTypes, /* exportTypes, */ selectUsedNames, addRamdaImport, parse)
 

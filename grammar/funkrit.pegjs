@@ -38,11 +38,15 @@
 
     function buildNamedExportList(head, tail, index) {
         return buildList(head, tail, index).map(function(x){
-                    return {
+                    var res = {
                       type: "ExportSpecifier",
-                      local: x,
-                      exported: x
+                      local: x.id,
+                      exported: x.id
+                    };
+                    if(x.funkrit) {
+                        res.funkrit = x.funkrit
                     }
+                    return res;
                 });
     }
 
@@ -497,7 +501,7 @@ DefaultClause
     }
 
 ExportStatement
-  = ExportToken _ head:Identifier tail:(__ "," __ Identifier)* {
+  = ExportToken _ head:ExportIdentifier tail:(__ "," __ ExportIdentifier)* {
       return {
         type: "ExportNamedDeclaration",
         loc: location(),
@@ -505,6 +509,14 @@ ExportStatement
         source: null,
         specifiers: buildNamedExportList(head, tail, 3)
       };
+  }
+
+ExportIdentifier
+  = "type" _ id:Identifier {
+    return {id: id, funkrit: "type"}
+  }
+  / id:Identifier {
+    return { id: id}
   }
 
 UseStatement
@@ -542,6 +554,14 @@ ImportSpec
 		local: name
     }
   }
+  / "type" _ id:Identifier {
+	return {
+		type: "ImportSpecifier",
+        imported: id,
+		local: id,
+        funkrit: "type"
+    }
+  }
   / id:Identifier {
 	return {
 		type: "ImportSpecifier",
@@ -551,7 +571,10 @@ ImportSpec
   }
 
 DataDeclarationStatement
-  = "newtype" __ id:TypeIdentifier __ "=" __ declarator:DataDeclarator {
+  = "export" __  "type" __ id:TypeIdentifier __ "=" __ declarator:DataDeclarator {
+      return "export type " + id + " = " + declarator + ";"
+    }
+  / "type" __ id:TypeIdentifier __ "=" __ declarator:DataDeclarator {
       return "type " + id + " = " + declarator + ";"
     }
 
@@ -577,10 +600,12 @@ DataObjectProp
   }
 
 DataKeyValue
-  = key:Identifier __ ":" __ value:Identifier {
+  = key:Identifier __ ":" __ value:Identifier "[]" {
+    return key.name + ":" + value.name + "[]"
+  }
+  / key:Identifier __ ":" __ value:Identifier {
     return key.name + ":" + value.name
   }
-
 SingleExpression
     = ConditionalExpression
 

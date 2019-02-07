@@ -1,13 +1,13 @@
 export getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse
 
-import_type '../libs/ast-types' { Node }
+//import '../libs/ast-types' { type Node }
 
-/*
 newtype AST = {
   type: string,
   body: Statement[]
 }
 
+/*
 newtype Identifier = {
   type: string,
   name: string

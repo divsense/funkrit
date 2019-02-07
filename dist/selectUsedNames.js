@@ -7,18 +7,17 @@
  * Last Modified Date: 01.02.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
-const { take, lensProp, indexOf, over, append, concat, compose, propEq, path, filter, map, reduce } = require('ramda')
+const { take, pathEq, lensProp, indexOf, over, append, concat, compose, propEq, path, filter, map, reduce } = require('ramda')
 const { travel } = require('./ast-travel')
 
 /*::
 
-import type { Node, Identifier, ImportSpecifier } from '../libs/ast-types'
+import type { Node, Identifier, ImportSpecifier } from '../flow-libs/ast-types'
 import type { PNode, State, Context, Result, Visitors } from './ast-travel'
 
 */
 
-const identifier /*: Context => Result */
-    = ({result, parentType, parentProperty, node}) => {
+const identifier /*: Context => Result */ = ({result, parentType, parentProperty, node}) => {
     /*
     const xx = parentType + " : " + parentProperty + " = " + node.name
     if(parentType !== 'ImportSpecifier') {
@@ -73,7 +72,8 @@ const extractUsedNames /*: string[] => (ImportSpecifier[], ImportSpecifier) => I
     = names => (m, spec) => indexOf(path(['local', 'name'], spec), names) === -1 ? m : append(spec, m)
 
 const usedNames /*: string[] => Node => Node */
-    = names => node => node.type === 'ImportDeclaration' ? over(lensProp('specifiers'), reduce(extractUsedNames(names), []), node) : node
+    = names => node => (node.type === 'ImportDeclaration' && pathEq(['funkrit', 'importMode'], 'Full', node))
+        ? over(lensProp('specifiers'), reduce(extractUsedNames(names), []), node) : node
 
 const selectUsedNames /*: Node => Node */ = ast => {
     const visitors = { Identifier: identifier }

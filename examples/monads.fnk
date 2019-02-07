@@ -1,23 +1,33 @@
-export makeImportSpec
+export moon
 
-export type Foom
-import type '../libs/ast-types' { ImportSpecifier, Identifier }
+import '../../libs/math.js' { sin }
+import '../../flow-libs/ast-types.js' { type Identifier, type Node }
 
-newtype Foom = {
-    dada: string[]
+export
+type Foom = {
+    fomm: number
 }
 
-makeImportSpec :: String -> ImportSpecifier
-makeImportSpec = name -> ({
-    type: 'ImportSpecifier',
-    imported: {
-        type: 'Identifier',
-        name
-    },
-    local: {
-        type: 'Identifier',
-        name
+type LocalNON = {
+    fomm: number
+}
+
+moon :: string -> Node
+moon = name -> {
+    return {
+        type: "Identifier",
+        name: moonit(name),
+        start: 0,
+        end: 0,
+        loc: {
+         end: {column: 0, line: 0},
+         start: {column: 0, line: 0}
+       }
     }
-})
+
+}
+
+nameit :: string -> string
+moonit = concat('moon')
 
 
