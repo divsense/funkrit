@@ -29,11 +29,8 @@
         return list.map(function(el) { return [ el[a], el[b] ]; });
     }
 
-    function buildProgram(uses, imports, body, exports) {
-        return extractList(uses, 1)
-                .concat(extractList(imports, 1))
-                .concat(body)
-                .concat([exports])
+    function buildProgram(imports, body) {
+        return extractList(imports, 1).concat(body)
     }
 
     function buildNamedExportList(head, tail, index) {
@@ -250,9 +247,7 @@ Start
   = __ program:Program __ { return program; }
 
 Program
-  = exports:ExportStatement
-    uses:(__ UseStatement)*
-    imports:(__ ImportStatement)*
+  = imports:(__ ImportStatement)*
     datas:(__ DataDeclarationStatement)*
     body:(__ SourceElements)? {
 
@@ -273,7 +268,7 @@ Program
 
       return {
         type: "Program",
-        body: buildProgram(uses, imports, b, exports),
+        body: buildProgram(imports, b),
         sourceType: 'module',
         comments: comments
       };
@@ -519,8 +514,15 @@ ExportIdentifier
     return { id: id}
   }
 
-UseStatement
-  = "use" _ url:StringLiteral __ "but" __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
+ImportStatement
+  = "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "=" _ url:StringLiteral EOS {
+	return {
+		type: "ImportDeclaration",
+		source: url,
+		specifiers: buildList(head, tail, 3)
+    }
+  }
+  / "{" _ "*" _ "!" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "=" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -528,7 +530,7 @@ UseStatement
         funkrit: {use: 'Exclusive'}
     }
   }
-  / "use" _ url:StringLiteral EOS {
+  / "{" _ "*" _ "}" _ "=" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -536,9 +538,7 @@ UseStatement
         funkrit: {use: 'Full'}
     }
   }
-
-ImportStatement
-  = "import" _ url:StringLiteral __ "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" EOS {
+  / "{" __ head:Identifier tail:(__ "," __ Identifier)* __ "}" _ ":=" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -554,14 +554,6 @@ ImportSpec
 		local: name
     }
   }
-  / "type" _ id:Identifier {
-	return {
-		type: "ImportSpecifier",
-        imported: id,
-		local: id,
-        funkrit: "type"
-    }
-  }
   / id:Identifier {
 	return {
 		type: "ImportSpecifier",
@@ -571,11 +563,8 @@ ImportSpec
   }
 
 DataDeclarationStatement
-  = "export" __  "type" __ id:TypeIdentifier __ "=" __ declarator:DataDeclarator {
+  = id:TypeIdentifier _ ":=" _ declarator:DataDeclarator {
       return "export type " + id + " = " + declarator + ";"
-    }
-  / "type" __ id:TypeIdentifier __ "=" __ declarator:DataDeclarator {
-      return "type " + id + " = " + declarator + ";"
     }
 
 TypeIdentifier

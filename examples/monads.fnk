@@ -1,28 +1,32 @@
-export moon
+//{ * } = 'ramda'
+//{ * ! sin } = '../../libs/math.js'
 
-import '../../libs/math.js' { sin }
-import '../../flow-libs/ast-types.js' { type Identifier, type Node }
+//{ Identifier, Node } := '../../flow-libs/ast-types.js'
 
-export
-type Foom = {
+Foom := {
     fomm: number
 }
 
-type LocalNON = {
+LocalNON := {
     fomm: number
 }
 
-moon :: string -> Node
-moon = name -> {
+moon :: string -> Identifier
+moon =  name   -> {
     return {
         type: "Identifier",
         name: moonit(name),
+        _Identifier: undefined,
         start: 0,
         end: 0,
         loc: {
          end: {column: 0, line: 0},
          start: {column: 0, line: 0}
-       }
+        },
+        typeAnnotation: null,
+        innerComments: null,
+        leadingComments: null,
+        trailingComments: null
     }
 
 }

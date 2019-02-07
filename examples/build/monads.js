@@ -1,16 +1,14 @@
 // @flow
 /*::
 export type Foom = {fomm:number};
-type LocalNON = {fomm:number};
+export type LocalNON = {fomm:number};
 */
-// :: import type { Identifier,Node } from "../../flow-libs/ast-types.js"
 const {concat} = require("ramda");
-const {sin} = require("../../libs/math.js");
-const {} = require("../../flow-libs/ast-types.js");
-function moon(name /* : string */) /* : Node */{
+function moon(name /* : string */) /* : Identifier */{
   return {
     type: "Identifier",
     name: moonit(name),
+    _Identifier: undefined,
     start: 0,
     end: 0,
     loc: {
@@ -22,10 +20,11 @@ function moon(name /* : string */) /* : Node */{
         column: 0,
         line: 0
       }
-    }
+    },
+    typeAnnotation: null,
+    innerComments: null,
+    leadingComments: null,
+    trailingComments: null
   };
 }
 const moonit /* : string => string */ = concat("moon");
-module.exports = {
-  moon
-};

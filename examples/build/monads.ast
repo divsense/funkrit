@@ -44,87 +44,19 @@
       "kind": "const"
     },
     {
-      "type": "VariableDeclaration",
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "id": {
-            "type": "ObjectPattern",
-            "properties": [
-              {
-                "type": "Property",
-                "method": false,
-                "shorthand": true,
-                "computed": false,
-                "key": {
-                  "type": "Identifier",
-                  "name": "sin"
-                },
-                "value": {
-                  "type": "Identifier",
-                  "name": "sin"
-                },
-                "kind": "init"
-              }
-            ]
-          },
-          "init": {
-            "type": "CallExpression",
-            "callee": {
-              "type": "Identifier",
-              "name": "require"
-            },
-            "arguments": [
-              {
-                "type": "Literal",
-                "value": "../../libs/math.js"
-              }
-            ]
-          }
-        }
-      ],
-      "kind": "const"
-    },
-    {
-      "type": "VariableDeclaration",
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "id": {
-            "type": "ObjectPattern",
-            "properties": []
-          },
-          "init": {
-            "type": "CallExpression",
-            "callee": {
-              "type": "Identifier",
-              "name": "require"
-            },
-            "arguments": [
-              {
-                "type": "Literal",
-                "value": "../../flow-libs/ast-types.js"
-              }
-            ]
-          }
-        }
-      ],
-      "kind": "const"
-    },
-    {
       "type": "FunctionDeclaration",
       "id": {
         "type": "Identifier",
         "name": "moon",
         "loc": {
           "start": {
-            "offset": 221,
-            "line": 16,
+            "offset": 207,
+            "line": 15,
             "column": 1
           },
           "end": {
-            "offset": 225,
-            "line": 16,
+            "offset": 211,
+            "line": 15,
             "column": 5
           }
         }
@@ -137,13 +69,13 @@
           "name": "name",
           "loc": {
             "start": {
-              "offset": 228,
-              "line": 16,
+              "offset": 214,
+              "line": 15,
               "column": 8
             },
             "end": {
-              "offset": 232,
-              "line": 16,
+              "offset": 218,
+              "line": 15,
               "column": 12
             }
           },
@@ -170,13 +102,13 @@
                     "name": "type",
                     "loc": {
                       "start": {
-                        "offset": 259,
-                        "line": 18,
+                        "offset": 245,
+                        "line": 17,
                         "column": 9
                       },
                       "end": {
-                        "offset": 263,
-                        "line": 18,
+                        "offset": 249,
+                        "line": 17,
                         "column": 13
                       }
                     }
@@ -194,13 +126,13 @@
                     "name": "name",
                     "loc": {
                       "start": {
-                        "offset": 287,
-                        "line": 19,
+                        "offset": 273,
+                        "line": 18,
                         "column": 9
                       },
                       "end": {
-                        "offset": 291,
-                        "line": 19,
+                        "offset": 277,
+                        "line": 18,
                         "column": 13
                       }
                     }
@@ -212,13 +144,13 @@
                       "name": "moonit",
                       "loc": {
                         "start": {
-                          "offset": 293,
-                          "line": 19,
+                          "offset": 279,
+                          "line": 18,
                           "column": 15
                         },
                         "end": {
-                          "offset": 299,
-                          "line": 19,
+                          "offset": 285,
+                          "line": 18,
                           "column": 21
                         }
                       }
@@ -229,13 +161,13 @@
                         "name": "name",
                         "loc": {
                           "start": {
-                            "offset": 300,
-                            "line": 19,
+                            "offset": 286,
+                            "line": 18,
                             "column": 22
                           },
                           "end": {
-                            "offset": 304,
-                            "line": 19,
+                            "offset": 290,
+                            "line": 18,
                             "column": 26
                           }
                         }
@@ -248,15 +180,51 @@
                   "type": "Property",
                   "key": {
                     "type": "Identifier",
+                    "name": "_Identifier",
+                    "loc": {
+                      "start": {
+                        "offset": 301,
+                        "line": 19,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 312,
+                        "line": 19,
+                        "column": 20
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Identifier",
+                    "name": "undefined",
+                    "loc": {
+                      "start": {
+                        "offset": 314,
+                        "line": 19,
+                        "column": 22
+                      },
+                      "end": {
+                        "offset": 323,
+                        "line": 19,
+                        "column": 31
+                      }
+                    }
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
                     "name": "start",
                     "loc": {
                       "start": {
-                        "offset": 315,
+                        "offset": 333,
                         "line": 20,
                         "column": 9
                       },
                       "end": {
-                        "offset": 320,
+                        "offset": 338,
                         "line": 20,
                         "column": 14
                       }
@@ -275,12 +243,12 @@
                     "name": "end",
                     "loc": {
                       "start": {
-                        "offset": 333,
+                        "offset": 351,
                         "line": 21,
                         "column": 9
                       },
                       "end": {
-                        "offset": 336,
+                        "offset": 354,
                         "line": 21,
                         "column": 12
                       }
@@ -299,12 +267,12 @@
                     "name": "loc",
                     "loc": {
                       "start": {
-                        "offset": 349,
+                        "offset": 367,
                         "line": 22,
                         "column": 9
                       },
                       "end": {
-                        "offset": 352,
+                        "offset": 370,
                         "line": 22,
                         "column": 12
                       }
@@ -320,12 +288,12 @@
                           "name": "end",
                           "loc": {
                             "start": {
-                              "offset": 365,
+                              "offset": 383,
                               "line": 23,
                               "column": 10
                             },
                             "end": {
-                              "offset": 368,
+                              "offset": 386,
                               "line": 23,
                               "column": 13
                             }
@@ -341,12 +309,12 @@
                                 "name": "column",
                                 "loc": {
                                   "start": {
-                                    "offset": 371,
+                                    "offset": 389,
                                     "line": 23,
                                     "column": 16
                                   },
                                   "end": {
-                                    "offset": 377,
+                                    "offset": 395,
                                     "line": 23,
                                     "column": 22
                                   }
@@ -365,12 +333,12 @@
                                 "name": "line",
                                 "loc": {
                                   "start": {
-                                    "offset": 382,
+                                    "offset": 400,
                                     "line": 23,
                                     "column": 27
                                   },
                                   "end": {
-                                    "offset": 386,
+                                    "offset": 404,
                                     "line": 23,
                                     "column": 31
                                   }
@@ -393,12 +361,12 @@
                           "name": "start",
                           "loc": {
                             "start": {
-                              "offset": 401,
+                              "offset": 419,
                               "line": 24,
                               "column": 10
                             },
                             "end": {
-                              "offset": 406,
+                              "offset": 424,
                               "line": 24,
                               "column": 15
                             }
@@ -414,12 +382,12 @@
                                 "name": "column",
                                 "loc": {
                                   "start": {
-                                    "offset": 409,
+                                    "offset": 427,
                                     "line": 24,
                                     "column": 18
                                   },
                                   "end": {
-                                    "offset": 415,
+                                    "offset": 433,
                                     "line": 24,
                                     "column": 24
                                   }
@@ -438,12 +406,12 @@
                                 "name": "line",
                                 "loc": {
                                   "start": {
-                                    "offset": 420,
+                                    "offset": 438,
                                     "line": 24,
                                     "column": 29
                                   },
                                   "end": {
-                                    "offset": 424,
+                                    "offset": 442,
                                     "line": 24,
                                     "column": 33
                                   }
@@ -462,6 +430,102 @@
                     ]
                   },
                   "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "typeAnnotation",
+                    "loc": {
+                      "start": {
+                        "offset": 466,
+                        "line": 26,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 480,
+                        "line": 26,
+                        "column": 23
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": null
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "innerComments",
+                    "loc": {
+                      "start": {
+                        "offset": 496,
+                        "line": 27,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 509,
+                        "line": 27,
+                        "column": 22
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": null
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "leadingComments",
+                    "loc": {
+                      "start": {
+                        "offset": 525,
+                        "line": 28,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 540,
+                        "line": 28,
+                        "column": 24
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": null
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "trailingComments",
+                    "loc": {
+                      "start": {
+                        "offset": 556,
+                        "line": 29,
+                        "column": 9
+                      },
+                      "end": {
+                        "offset": 572,
+                        "line": 29,
+                        "column": 25
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": null
+                  },
+                  "kind": "init"
                 }
               ]
             }
@@ -470,7 +534,7 @@
         "comments": [
           {
             "type": "Block",
-            "value": ": Node"
+            "value": ": Identifier"
           }
         ]
       }
@@ -485,13 +549,13 @@
             "name": "moonit",
             "loc": {
               "start": {
-                "offset": 475,
-                "line": 31,
+                "offset": 616,
+                "line": 35,
                 "column": 1
               },
               "end": {
-                "offset": 481,
-                "line": 31,
+                "offset": 622,
+                "line": 35,
                 "column": 7
               }
             },
@@ -509,13 +573,13 @@
               "name": "concat",
               "loc": {
                 "start": {
-                  "offset": 484,
-                  "line": 31,
+                  "offset": 625,
+                  "line": 35,
                   "column": 10
                 },
                 "end": {
-                  "offset": 490,
-                  "line": 31,
+                  "offset": 631,
+                  "line": 35,
                   "column": 16
                 }
               }
@@ -530,45 +594,6 @@
         }
       ],
       "kind": "const"
-    },
-    {
-      "type": "ExpressionStatement",
-      "expression": {
-        "type": "AssignmentExpression",
-        "operator": "=",
-        "left": {
-          "type": "MemberExpression",
-          "computed": false,
-          "object": {
-            "type": "Identifier",
-            "name": "module"
-          },
-          "property": {
-            "type": "Identifier",
-            "name": "exports"
-          }
-        },
-        "right": {
-          "type": "ObjectExpression",
-          "properties": [
-            {
-              "type": "Property",
-              "key": {
-                "type": "Identifier",
-                "name": "moon"
-              },
-              "computed": false,
-              "value": {
-                "type": "Identifier",
-                "name": "moon"
-              },
-              "kind": "init",
-              "method": false,
-              "shorthand": true
-            }
-          ]
-        }
-      }
     }
   ],
   "sourceType": "module",
@@ -579,11 +604,7 @@
     },
     {
       "type": "Block",
-      "value": "::\nexport type Foom = {fomm:number};\ntype LocalNON = {fomm:number};\n"
-    },
-    {
-      "type": "Line",
-      "value": ":: import type { Identifier,Node } from \"../../flow-libs/ast-types.js\""
+      "value": "::\nexport type Foom = {fomm:number};\nexport type LocalNON = {fomm:number};\n"
     }
   ]
 }
