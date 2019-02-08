@@ -8,23 +8,7 @@
           "type": "VariableDeclarator",
           "id": {
             "type": "ObjectPattern",
-            "properties": [
-              {
-                "type": "Property",
-                "method": false,
-                "shorthand": true,
-                "computed": false,
-                "key": {
-                  "type": "Identifier",
-                  "name": "concat"
-                },
-                "value": {
-                  "type": "Identifier",
-                  "name": "concat"
-                },
-                "kind": "init"
-              }
-            ]
+            "properties": []
           },
           "init": {
             "type": "CallExpression",
@@ -47,17 +31,100 @@
       "type": "FunctionDeclaration",
       "id": {
         "type": "Identifier",
-        "name": "moon",
+        "name": "moonit",
         "loc": {
           "start": {
-            "offset": 207,
-            "line": 15,
+            "offset": 233,
+            "line": 14,
             "column": 1
           },
           "end": {
-            "offset": 211,
-            "line": 15,
-            "column": 5
+            "offset": 239,
+            "line": 14,
+            "column": 7
+          }
+        }
+      },
+      "generator": false,
+      "expression": false,
+      "params": [
+        {
+          "type": "Identifier",
+          "name": "str",
+          "loc": {
+            "start": {
+              "offset": 242,
+              "line": 14,
+              "column": 10
+            },
+            "end": {
+              "offset": 245,
+              "line": 14,
+              "column": 13
+            }
+          },
+          "comments": [
+            {
+              "type": "Block",
+              "value": ": string"
+            }
+          ]
+        }
+      ],
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "ReturnStatement",
+            "argument": {
+              "type": "BinaryExpression",
+              "operator": "+",
+              "left": {
+                "type": "Literal",
+                "value": "moon"
+              },
+              "right": {
+                "type": "Identifier",
+                "name": "str",
+                "loc": {
+                  "start": {
+                    "offset": 258,
+                    "line": 14,
+                    "column": 26
+                  },
+                  "end": {
+                    "offset": 261,
+                    "line": 14,
+                    "column": 29
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "comments": [
+          {
+            "type": "Block",
+            "value": ": string"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FunctionDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "makeIdent",
+        "loc": {
+          "start": {
+            "offset": 297,
+            "line": 17,
+            "column": 1
+          },
+          "end": {
+            "offset": 306,
+            "line": 17,
+            "column": 10
           }
         }
       },
@@ -69,14 +136,14 @@
           "name": "name",
           "loc": {
             "start": {
-              "offset": 214,
-              "line": 15,
-              "column": 8
+              "offset": 310,
+              "line": 17,
+              "column": 14
             },
             "end": {
-              "offset": 218,
-              "line": 15,
-              "column": 12
+              "offset": 314,
+              "line": 17,
+              "column": 18
             }
           },
           "comments": [
@@ -102,13 +169,13 @@
                     "name": "type",
                     "loc": {
                       "start": {
-                        "offset": 245,
-                        "line": 17,
+                        "offset": 343,
+                        "line": 19,
                         "column": 9
                       },
                       "end": {
-                        "offset": 249,
-                        "line": 17,
+                        "offset": 347,
+                        "line": 19,
                         "column": 13
                       }
                     }
@@ -126,13 +193,13 @@
                     "name": "name",
                     "loc": {
                       "start": {
-                        "offset": 273,
-                        "line": 18,
+                        "offset": 371,
+                        "line": 20,
                         "column": 9
                       },
                       "end": {
-                        "offset": 277,
-                        "line": 18,
+                        "offset": 375,
+                        "line": 20,
                         "column": 13
                       }
                     }
@@ -144,13 +211,13 @@
                       "name": "moonit",
                       "loc": {
                         "start": {
-                          "offset": 279,
-                          "line": 18,
+                          "offset": 377,
+                          "line": 20,
                           "column": 15
                         },
                         "end": {
-                          "offset": 285,
-                          "line": 18,
+                          "offset": 383,
+                          "line": 20,
                           "column": 21
                         }
                       }
@@ -161,13 +228,13 @@
                         "name": "name",
                         "loc": {
                           "start": {
-                            "offset": 286,
-                            "line": 18,
+                            "offset": 384,
+                            "line": 20,
                             "column": 22
                           },
                           "end": {
-                            "offset": 290,
-                            "line": 18,
+                            "offset": 388,
+                            "line": 20,
                             "column": 26
                           }
                         }
@@ -183,13 +250,13 @@
                     "name": "_Identifier",
                     "loc": {
                       "start": {
-                        "offset": 301,
-                        "line": 19,
+                        "offset": 399,
+                        "line": 21,
                         "column": 9
                       },
                       "end": {
-                        "offset": 312,
-                        "line": 19,
+                        "offset": 410,
+                        "line": 21,
                         "column": 20
                       }
                     }
@@ -199,13 +266,13 @@
                     "name": "undefined",
                     "loc": {
                       "start": {
-                        "offset": 314,
-                        "line": 19,
+                        "offset": 412,
+                        "line": 21,
                         "column": 22
                       },
                       "end": {
-                        "offset": 323,
-                        "line": 19,
+                        "offset": 421,
+                        "line": 21,
                         "column": 31
                       }
                     }
@@ -219,13 +286,13 @@
                     "name": "start",
                     "loc": {
                       "start": {
-                        "offset": 333,
-                        "line": 20,
+                        "offset": 431,
+                        "line": 22,
                         "column": 9
                       },
                       "end": {
-                        "offset": 338,
-                        "line": 20,
+                        "offset": 436,
+                        "line": 22,
                         "column": 14
                       }
                     }
@@ -243,13 +310,13 @@
                     "name": "end",
                     "loc": {
                       "start": {
-                        "offset": 351,
-                        "line": 21,
+                        "offset": 449,
+                        "line": 23,
                         "column": 9
                       },
                       "end": {
-                        "offset": 354,
-                        "line": 21,
+                        "offset": 452,
+                        "line": 23,
                         "column": 12
                       }
                     }
@@ -267,13 +334,13 @@
                     "name": "loc",
                     "loc": {
                       "start": {
-                        "offset": 367,
-                        "line": 22,
+                        "offset": 465,
+                        "line": 24,
                         "column": 9
                       },
                       "end": {
-                        "offset": 370,
-                        "line": 22,
+                        "offset": 468,
+                        "line": 24,
                         "column": 12
                       }
                     }
@@ -288,13 +355,13 @@
                           "name": "end",
                           "loc": {
                             "start": {
-                              "offset": 383,
-                              "line": 23,
+                              "offset": 481,
+                              "line": 25,
                               "column": 10
                             },
                             "end": {
-                              "offset": 386,
-                              "line": 23,
+                              "offset": 484,
+                              "line": 25,
                               "column": 13
                             }
                           }
@@ -309,13 +376,13 @@
                                 "name": "column",
                                 "loc": {
                                   "start": {
-                                    "offset": 389,
-                                    "line": 23,
+                                    "offset": 487,
+                                    "line": 25,
                                     "column": 16
                                   },
                                   "end": {
-                                    "offset": 395,
-                                    "line": 23,
+                                    "offset": 493,
+                                    "line": 25,
                                     "column": 22
                                   }
                                 }
@@ -333,13 +400,13 @@
                                 "name": "line",
                                 "loc": {
                                   "start": {
-                                    "offset": 400,
-                                    "line": 23,
+                                    "offset": 498,
+                                    "line": 25,
                                     "column": 27
                                   },
                                   "end": {
-                                    "offset": 404,
-                                    "line": 23,
+                                    "offset": 502,
+                                    "line": 25,
                                     "column": 31
                                   }
                                 }
@@ -361,13 +428,13 @@
                           "name": "start",
                           "loc": {
                             "start": {
-                              "offset": 419,
-                              "line": 24,
+                              "offset": 517,
+                              "line": 26,
                               "column": 10
                             },
                             "end": {
-                              "offset": 424,
-                              "line": 24,
+                              "offset": 522,
+                              "line": 26,
                               "column": 15
                             }
                           }
@@ -382,13 +449,13 @@
                                 "name": "column",
                                 "loc": {
                                   "start": {
-                                    "offset": 427,
-                                    "line": 24,
+                                    "offset": 525,
+                                    "line": 26,
                                     "column": 18
                                   },
                                   "end": {
-                                    "offset": 433,
-                                    "line": 24,
+                                    "offset": 531,
+                                    "line": 26,
                                     "column": 24
                                   }
                                 }
@@ -406,13 +473,13 @@
                                 "name": "line",
                                 "loc": {
                                   "start": {
-                                    "offset": 438,
-                                    "line": 24,
+                                    "offset": 536,
+                                    "line": 26,
                                     "column": 29
                                   },
                                   "end": {
-                                    "offset": 442,
-                                    "line": 24,
+                                    "offset": 540,
+                                    "line": 26,
                                     "column": 33
                                   }
                                 }
@@ -438,13 +505,13 @@
                     "name": "typeAnnotation",
                     "loc": {
                       "start": {
-                        "offset": 466,
-                        "line": 26,
+                        "offset": 564,
+                        "line": 28,
                         "column": 9
                       },
                       "end": {
-                        "offset": 480,
-                        "line": 26,
+                        "offset": 578,
+                        "line": 28,
                         "column": 23
                       }
                     }
@@ -462,13 +529,13 @@
                     "name": "innerComments",
                     "loc": {
                       "start": {
-                        "offset": 496,
-                        "line": 27,
+                        "offset": 594,
+                        "line": 29,
                         "column": 9
                       },
                       "end": {
-                        "offset": 509,
-                        "line": 27,
+                        "offset": 607,
+                        "line": 29,
                         "column": 22
                       }
                     }
@@ -486,13 +553,13 @@
                     "name": "leadingComments",
                     "loc": {
                       "start": {
-                        "offset": 525,
-                        "line": 28,
+                        "offset": 623,
+                        "line": 30,
                         "column": 9
                       },
                       "end": {
-                        "offset": 540,
-                        "line": 28,
+                        "offset": 638,
+                        "line": 30,
                         "column": 24
                       }
                     }
@@ -510,13 +577,13 @@
                     "name": "trailingComments",
                     "loc": {
                       "start": {
-                        "offset": 556,
-                        "line": 29,
+                        "offset": 654,
+                        "line": 31,
                         "column": 9
                       },
                       "end": {
-                        "offset": 572,
-                        "line": 29,
+                        "offset": 670,
+                        "line": 31,
                         "column": 25
                       }
                     }
@@ -540,60 +607,295 @@
       }
     },
     {
-      "type": "VariableDeclaration",
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "id": {
-            "type": "Identifier",
-            "name": "moonit",
-            "loc": {
-              "start": {
-                "offset": 616,
-                "line": 35,
-                "column": 1
-              },
-              "end": {
-                "offset": 622,
-                "line": 35,
-                "column": 7
-              }
-            },
-            "comments": [
-              {
-                "type": "Block",
-                "value": ": string => string"
-              }
-            ]
+      "type": "FunctionDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "makeFunkritFullUse",
+        "loc": {
+          "start": {
+            "offset": 744,
+            "line": 37,
+            "column": 1
           },
-          "init": {
-            "type": "CallExpression",
-            "callee": {
-              "type": "Identifier",
-              "name": "concat",
-              "loc": {
-                "start": {
-                  "offset": 625,
-                  "line": 35,
-                  "column": 10
-                },
-                "end": {
-                  "offset": 631,
-                  "line": 35,
-                  "column": 16
-                }
-              }
-            },
-            "arguments": [
-              {
-                "type": "Literal",
-                "value": "moon"
-              }
-            ]
+          "end": {
+            "offset": 762,
+            "line": 37,
+            "column": 19
           }
         }
+      },
+      "generator": false,
+      "expression": false,
+      "params": [
+        {
+          "type": "Identifier",
+          "name": "name",
+          "loc": {
+            "start": {
+              "offset": 765,
+              "line": 37,
+              "column": 22
+            },
+            "end": {
+              "offset": 769,
+              "line": 37,
+              "column": 26
+            }
+          },
+          "comments": [
+            {
+              "type": "Block",
+              "value": ": string"
+            }
+          ]
+        }
       ],
-      "kind": "const"
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "ReturnStatement",
+            "argument": {
+              "type": "ObjectExpression",
+              "properties": [
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "type",
+                    "loc": {
+                      "start": {
+                        "offset": 778,
+                        "line": 38,
+                        "column": 3
+                      },
+                      "end": {
+                        "offset": 782,
+                        "line": 38,
+                        "column": 7
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": "ImportDeclaration"
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "source",
+                    "loc": {
+                      "start": {
+                        "offset": 807,
+                        "line": 39,
+                        "column": 3
+                      },
+                      "end": {
+                        "offset": 813,
+                        "line": 39,
+                        "column": 9
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "ObjectExpression",
+                    "properties": [
+                      {
+                        "type": "Property",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "value",
+                          "loc": {
+                            "start": {
+                              "offset": 817,
+                              "line": 39,
+                              "column": 13
+                            },
+                            "end": {
+                              "offset": 822,
+                              "line": 39,
+                              "column": 18
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "Identifier",
+                          "name": "name",
+                          "loc": {
+                            "start": {
+                              "offset": 824,
+                              "line": 39,
+                              "column": 20
+                            },
+                            "end": {
+                              "offset": 828,
+                              "line": 39,
+                              "column": 24
+                            }
+                          }
+                        },
+                        "kind": "init"
+                      }
+                    ]
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "specifiers",
+                    "loc": {
+                      "start": {
+                        "offset": 834,
+                        "line": 40,
+                        "column": 3
+                      },
+                      "end": {
+                        "offset": 844,
+                        "line": 40,
+                        "column": 13
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "ArrayExpression",
+                    "elements": []
+                  },
+                  "kind": "init"
+                },
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "funkrit",
+                    "loc": {
+                      "start": {
+                        "offset": 852,
+                        "line": 41,
+                        "column": 3
+                      },
+                      "end": {
+                        "offset": 859,
+                        "line": 41,
+                        "column": 10
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "ObjectExpression",
+                    "properties": [
+                      {
+                        "type": "Property",
+                        "key": {
+                          "type": "Identifier",
+                          "name": "juse",
+                          "loc": {
+                            "start": {
+                              "offset": 863,
+                              "line": 41,
+                              "column": 14
+                            },
+                            "end": {
+                              "offset": 867,
+                              "line": 41,
+                              "column": 18
+                            }
+                          }
+                        },
+                        "value": {
+                          "type": "Literal",
+                          "value": "Full"
+                        },
+                        "kind": "init"
+                      }
+                    ]
+                  },
+                  "kind": "init"
+                }
+              ]
+            }
+          }
+        ],
+        "comments": [
+          {
+            "type": "Block",
+            "value": ": ImportDeclarationFunkrit"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ExpressionStatement",
+      "expression": {
+        "type": "AssignmentExpression",
+        "operator": "=",
+        "left": {
+          "type": "MemberExpression",
+          "computed": false,
+          "object": {
+            "type": "Identifier",
+            "name": "module"
+          },
+          "property": {
+            "type": "Identifier",
+            "name": "exports"
+          }
+        },
+        "right": {
+          "type": "ObjectExpression",
+          "properties": [
+            {
+              "type": "Property",
+              "key": {
+                "type": "Identifier",
+                "name": "moonit"
+              },
+              "computed": false,
+              "value": {
+                "type": "Identifier",
+                "name": "moonit"
+              },
+              "kind": "init",
+              "method": false,
+              "shorthand": true
+            },
+            {
+              "type": "Property",
+              "key": {
+                "type": "Identifier",
+                "name": "makeIdent"
+              },
+              "computed": false,
+              "value": {
+                "type": "Identifier",
+                "name": "makeIdent"
+              },
+              "kind": "init",
+              "method": false,
+              "shorthand": true
+            },
+            {
+              "type": "Property",
+              "key": {
+                "type": "Identifier",
+                "name": "makeFunkritFullUse"
+              },
+              "computed": false,
+              "value": {
+                "type": "Identifier",
+                "name": "makeFunkritFullUse"
+              },
+              "kind": "init",
+              "method": false,
+              "shorthand": true
+            }
+          ]
+        }
+      }
     }
   ],
   "sourceType": "module",
@@ -604,7 +906,11 @@
     },
     {
       "type": "Block",
-      "value": "::\nexport type Foom = {fomm:number};\nexport type LocalNON = {fomm:number};\n"
+      "value": "::\nimport type { Identifier, Node } from '../../flow-libs/ast-types.js';\n"
+    },
+    {
+      "type": "Block",
+      "value": "::\nexport type ImportDeclarationFunkrit = {type:'ImportDeclaration',source:{value:string},specifiers:Array<Node>,funkrit:{use:string}};\n"
     }
   ]
 }

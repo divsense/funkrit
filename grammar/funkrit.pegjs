@@ -30,7 +30,48 @@
     }
 
     function buildProgram(imports, body) {
-        return extractList(imports, 1).concat(body)
+        var specs = body.filter(function(node){
+                            return node.type === 'FunctionDeclaration' || node.type === 'VariableDeclaration'
+                        })
+                        .map(function(node){
+                            if(node.type === 'FunctionDeclaration') {
+                                return {
+                                        type: 'ExportSpecifier',
+                                        exported: {
+                                            type: 'Identifier',
+                                            name: node.id.name
+                                        },
+                                        local: {
+                                            type: 'Identifier',
+                                            name: node.id.name
+                                        }
+                                    };
+                            } else {
+                                var name = node.declarations[0].id.name
+                                return {
+                                        type: 'ExportSpecifier',
+                                        exported: {
+                                            type: 'Identifier',
+                                            name: name
+                                        },
+                                        local: {
+                                            type: 'Identifier',
+                                            name: name
+                                        }
+                                    };
+                            }
+                        });
+
+        var exported = {
+            type: 'ExportNamedDeclaration',
+            declaration: null,
+            source: null,
+            specifiers: specs
+        };
+
+        body.push(exported);
+
+        return imports.concat(body);
     }
 
     function buildNamedExportList(head, tail, index) {
@@ -251,24 +292,40 @@ Program
     datas:(__ DataDeclarationStatement)*
     body:(__ SourceElements)? {
 
-      var b = (body && body[1]) || [];
-      var d = extractList(datas, 1);
-
       var comments = [{
             type: "Line",
             value: " @flow"
         }];
 
-      if(d.length) {
+      var imports = extractList(imports, 1);
+      var _imports = imports.filter(function(node){ return !node.funkrit });
+      var typeImports = imports.filter(function(node){ return node.funkrit })
+                               .map(function(node) {
+                                    return "import type { " 
+                                            + node.specifiers.map(function(x){ return x.name }).join(', ')
+                                            + " } from '" + node.source.value + "';"
+                               });
+
+      if(typeImports.length) {
         comments.push({
             type: "Block",
-            value: "::\n" + d.join("\n") + "\n"
+            value: "::\n" + typeImports.join("\n") + "\n"
         });
       }
 
+      var _datas = extractList(datas, 1);
+
+      if(_datas.length) {
+        comments.push({
+            type: "Block",
+            value: "::\n" + _datas.join("\n") + "\n"
+        });
+      }
+
+      var _body = (body && body[1]) || [];
       return {
         type: "Program",
-        body: buildProgram(imports, b),
+        body: buildProgram(_imports, _body),
         sourceType: 'module',
         comments: comments
       };
@@ -542,7 +599,8 @@ ImportStatement
 	return {
 		type: "ImportDeclaration",
 		source: url,
-		specifiers: buildList(head, tail, 3)
+		specifiers: buildList(head, tail, 3),
+        funkrit: {use: "type"}
     }
   }
 
@@ -581,6 +639,9 @@ DataDeclarator
     return buildList(head, tail, 3).map(function(x){ return x.name }).join("|");
   }
   / id:Identifier { return id.name }
+  / str:StringLiteral { return "'" + str.value + "'" }
+  / num:NumericLiteral { return num }
+  / bool:BooleanLiteral { return bool }
 
 DataObjectProp
   = DataKeyValue
@@ -592,9 +653,21 @@ DataKeyValue
   = key:Identifier __ ":" __ value:Identifier "[]" {
     return key.name + ":" + value.name + "[]"
   }
-  / key:Identifier __ ":" __ value:Identifier {
-    return key.name + ":" + value.name
+  / key:Identifier __ ":" __ value:TypeIdentifier {
+    return key.name + ":" + value
   }
+  / key:Identifier __ ":" __ value:DataValueLiterals {
+    return key.name + ":" + value
+  }
+  / key:Identifier __ ":" __ value:DataDeclarator {
+    return key.name + ":" + value
+  }
+
+DataValueLiterals
+  = str:StringLiteral { return "'" + str.value + "'" }
+  / num:NumericLiteral { return num }
+  / bool:BooleanLiteral { return bool.value }
+
 SingleExpression
     = ConditionalExpression
 

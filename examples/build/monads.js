@@ -1,10 +1,18 @@
 // @flow
 /*::
-export type Foom = {fomm:number};
-export type LocalNON = {fomm:number};
+import type { Identifier, Node } from '../../flow-libs/ast-types.js';
 */
-const {concat} = require("ramda");
-function moon(name /* : string */) /* : Identifier */{
+/*::
+export type FullImportDeclaration = Node | {
+    type:'FullImportDeclaration',
+    source:{value:string}
+};
+*/
+const {} = require("ramda");
+function moonit(str /* : string */) /* : string */{
+  return "moon" + str;
+}
+function makeIdent(name /* : string */) /* : Identifier */{
   return {
     type: "Identifier",
     name: moonit(name),
@@ -27,4 +35,20 @@ function moon(name /* : string */) /* : Identifier */{
     trailingComments: null
   };
 }
-const moonit /* : string => string */ = concat("moon");
+function makeFunkritFullUse(name /* : string */) /* : FullImportDeclaration */{
+  return {
+    type: "FullImportDeclaration",
+    source: {
+      value: name
+    }
+  };
+}
+function aa() /* : Node */ {
+    return makeFunkritFullUse('foola')
+}
+
+module.exports = {
+  moonit,
+  makeIdent,
+  makeFunkritFullUse
+};

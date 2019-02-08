@@ -1,44 +1,21 @@
-export getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse
+{ Node } := '../flow-libs/ast-types.js'
 
-//import '../libs/ast-types' { type Node }
+ImportDeclarationFunkrit := Node | {
 
-newtype AST = {
-  type: string,
-  body: Statement[]
 }
 
-/*
-newtype Identifier = {
-  type: string,
-  name: string
-}
-
-newtype ImportSpec = {
-  type: string,
-  imported: Identifier,
-  local: Identifier
-}
-
-newtype ImportNode = {
-  type: string,
-  source: { value: string },
-  specifiers: ImportSpec[],
-  funkrit: { use: string }
-}
-
-newtype LibExports = {
+LibExports := {
   url: string,
   exports: string[]
 }
-*/
 
-libUrl :: [String]
+libUrl :: string[]
 libUrl = ['source', 'value']
 
-funkritUse :: [String]
+funkritUse :: string[]
 funkritUse = ['funkrit', 'use']
 
-isFunkritUseImport :: ImportNode -> Bool
+isFunkritUseImport :: ImportDeclaration -> boolean
 isFunkritUseImport = allPass $ [propEq('type', 'ImportDeclaration'), has('funkrit')]
 
 isImportOf :: String -> ImportNode -> Bool
@@ -69,7 +46,7 @@ makeImportSpec = name -> ({
     }
 })
 
-makeFunkritFullUse :: String -> ImportDeclaration
+makeFunkritFullUse :: string -> ImportDeclarationFunkrit
 makeFunkritFullUse = name -> ({
   type: 'ImportDeclaration',
   source: { value: name },
@@ -108,6 +85,6 @@ updateFunkritUseImports = (ast, exp) -> over(lensProp $ 'body', body -> {
     return over(lensIndex(findUseIndex(url) $ body), updateImportNode(exports), body)
 }, ast)
 
-addFunkritFullUse :: String, AST -> AST
+addFunkritFullUse :: (string, Node) -> Node
 addFunkritFullUse = (name, ast) -> over(lensProp $ 'body', prepend $ makeFunkritFullUse(name), ast)
 

@@ -1,18 +1,20 @@
-//{ * } = 'ramda'
-//{ * ! sin } = '../../libs/math.js'
+{ Identifier, Node } := '../../flow-libs/ast-types.js'
 
-//{ Identifier, Node } := '../../flow-libs/ast-types.js'
 
-Foom := {
-    fomm: number
+ImportDeclarationFunkrit := {
+  type: 'ImportDeclaration',
+  source: {value: string},
+  specifiers: Array<Node>,
+  funkrit: {
+    use: string
+  }
 }
 
-LocalNON := {
-    fomm: number
-}
+moonit :: string -> string
+moonit = str -> 'moon' + str
 
-moon :: string -> Identifier
-moon =  name   -> {
+makeIdent :: string -> Identifier
+makeIdent =  name   -> {
     return {
         type: "Identifier",
         name: moonit(name),
@@ -31,7 +33,11 @@ moon =  name   -> {
 
 }
 
-nameit :: string -> string
-moonit = concat('moon')
-
+makeFunkritFullUse :: string -> ImportDeclarationFunkrit
+makeFunkritFullUse = name -> ({
+  type: 'ImportDeclaration',
+  source: { value: name },
+  specifiers: [],
+  funkrit: { use: 'Full' }
+})
 
