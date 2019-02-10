@@ -1,25 +1,36 @@
-Eff<A> := () -> A
-IO<A> := {
-    run: Eff<A>,
-    pure(A): IO<A>,
-    map1<B>(?(A) -> B): IO<B>,
-    map<B>((A) -> B): IO<B>,
-    chain1: ?Func1,
-    chain: ?Func2<A>
+Effect<A> := () -> A | Function
+
+IO_Monad<A> := {
+    run: Effect<A>,
+    pure(A): IO_Monad<A>,
+    map<B>((A) -> B): IO_Monad<B>,
+    chain<B>((A) -> IO_Monad<B>): IO_Monad<B>,
+    ap<B>(IO_Monad<B>): IO_Monad<B>
 }
 
-IO :: Eff<A> -> IO<A>
+IO<A> :: Effect<A> -> IO_Monad<A>
 IO = run -> ({
     run,
-    pure: pureIO,
+
+    pure :: A -> IO_Monad<A>
+    pure: a -> IO $ () -> a,
+
+    map<B> :: (A -> B) -> IO_Monad<B>
     map: f -> IO $ f . run,
+
+    chain<B> :: (A -> IO_Monad<B>) -> IO_Monad<B>
     chain: f -> IO $ runIO . f . run,
-    ap: mv -> IO $ () -> runIO $ map(run(), mv)
+
+    ap<B> :: IO_Monad<B> -> IO_Monad<B>
+    ap: mv -> IO $ () -> runIO $ mapAp(run(), mv)
 })
 
-pureIO :: a -> IO a
+mapAp<A,B> :: (Function, IO_Monad<A>) -> IO_Monad<B>
+mapAp = (f, mb) -> map(f, mb)
+
+pureIO<A> :: A -> IO_Monad<A>
 pureIO = a -> IO $ () -> a
 
-runIO :: IO a -> a
-runIO = call . prop('run')
+runIO<A> :: IO_Monad<A> -> A
+runIO = x -> (call . prop('run'))(x)
 
