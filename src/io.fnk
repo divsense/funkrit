@@ -1,7 +1,14 @@
-export pureIO, runIO, IO
-use 'ramda'
+Eff<A> := () -> A
+IO<A> := {
+    run: Eff<A>,
+    pure(A): IO<A>,
+    map1<B>(?(A) -> B): IO<B>,
+    map<B>((A) -> B): IO<B>,
+    chain1: ?Func1,
+    chain: ?Func2<A>
+}
 
-IO :: Eff(a) -> IO(a)
+IO :: Eff<A> -> IO<A>
 IO = run -> ({
     run,
     pure: pureIO,

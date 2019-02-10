@@ -1,6 +1,6 @@
-{ Identifier, Node } := '../../flow-libs/ast-types.js'
+{ Identifier, Node } <: '../../flow-libs/ast-types.js'
 
-
+/*
 ImportDeclarationFunkrit := {
   type: 'ImportDeclaration',
   source: {value: string},
@@ -9,6 +9,7 @@ ImportDeclarationFunkrit := {
     use: string
   }
 }
+*/
 
 moonit :: string -> string
 moonit = str -> 'moon' + str
@@ -33,6 +34,8 @@ makeIdent =  name   -> {
 
 }
 
+
+/*
 makeFunkritFullUse :: string -> ImportDeclarationFunkrit
 makeFunkritFullUse = name -> ({
   type: 'ImportDeclaration',
@@ -40,4 +43,5 @@ makeFunkritFullUse = name -> ({
   specifiers: [],
   funkrit: { use: 'Full' }
 })
+*/
 

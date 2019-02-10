@@ -29,7 +29,7 @@ TESTS := $(addprefix $(TESTDIR)/, \
 	)
 
 BUILDEXMPLDIR := examples/build
-EXAMPLES := $(addprefix $(BUILDEXMPLDIR)/, monads.js monads.ast )
+EXAMPLES := $(addprefix $(BUILDEXMPLDIR)/, monads.js monads.ast types.js use-types.js )
 
 vpath %.pegjs grammar
 vpath %.fnk src
@@ -133,11 +133,11 @@ examples/build/monads.js: monads.fnk
 examples/build/monads.ast: monads.fnk
 	node ./bin/funkrit-node.js --ast $< > $@
 
-examples/build/use.js: use.fnk
+examples/build/types.js: types.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
-examples/build/use.ast: use.fnk
-	node ./bin/funkrit-node.js --ast -o $@ $<
+examples/build/use-types.js: use-types.fnk
+	node ./bin/funkrit-node.js -o $@ $<
 
 # Temp
 

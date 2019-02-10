@@ -218,7 +218,16 @@
         return x.replace(/^(\s+|\()|(\s+|\))$/gm,'');
     }
 
-    function getArgumentAnnotations(ans) {
+    function getArgumentAnnotations(_ans) {
+        var ps = _ans.match(/\([^)(]+\)/g)
+        var ans = ps ? ps.reduce((m,a) => {
+          const ind = m.indexOf(a)
+          if(ind > -1) {
+            return m.replace(a, a.replace(/-/g, "="))
+          }
+          return m
+        }, _ans) : _ans;
+    
         var xs = ans.split('->').map(trim).reduce(function(m,a) {
             m.push(a.split(',').map(trim))
             return m
@@ -255,30 +264,36 @@
         body: body
       };
 
-      if(type) {
-         var ans = getArgumentAnnotations(type); // [[number, boolean], [string']]
+        if(type && type.gen) {
+            res.leadingComments = [{
+                type: "Block",
+                value: ":: " + type.gen
+            }]
+        }
+
+      if(type && type.body) {
+         var ans = getArgumentAnnotations(type.body); // [[number, boolean], [string']]
 
          var args = ans[0]
          var rest = ans[1]
 
          for(var i = 0; i < params.length; i++) {
             if(args[i]) {
-                params[i].comments = [{
+                params[i].trailingComments = [{
                     type: "Block",
                     value: ": " + args[i],
                 }]
             }
          }
 
-         res.body.comments = [{
-            type: "Block",
-            value: ": " + rest
-         }];
-
+         if(rest) {
+             res.trailingComments = [{
+                type: "Block",
+                value: ": " + rest
+             }];
+         }
       }
-
       return res;
-
     }
 
 }
@@ -422,10 +437,11 @@ DeclaredFunctionParameters
 
 DeclarationStatement
   = type:(TypeAnnotation)? declaration:Declaration EOS {
+
       if(type) {
-          declaration.id.comments = [{
+          declaration.id.trailingComments = [{
             type: "Block",
-            value: ": " + type.split('->').join('=>'),
+            value: ": " + (type.gen || "") + (type.body || "").split('->').join('=>'),
         }];
       }
 
@@ -434,7 +450,6 @@ DeclarationStatement
         declarations: [declaration],
         kind: "const"
       };
-
     }
 
 Declaration
@@ -451,10 +466,19 @@ AssignmentExpression
   / SingleExpression
 
 TypeAnnotation
-  = Identifier WhiteSpace* "::" WhiteSpace* decl:(!LineTerminator SourceCharacter)+ LineTerminator {
+  = gen:FuncTypeIdentifier WhiteSpace* "::" WhiteSpace* decl:(!LineTerminator SourceCharacter)+ LineTerminator {
     var body = decl.map(function(x){return x[1]}).join("")
-    return body
+    return {
+        gen: gen,
+        body: body
+    }
   }
+
+FuncTypeIdentifier
+  = Identifier "<" _ head:TypeIdentifier tail:(_ "," _ TypeIdentifier)* _ ">" {
+    return "<" + buildList(head, tail, 3).join(",") + ">";
+  }
+  / Identifier { return "" }
 
 ExpressionStatement
   = !("{" / ArrowToken) expression:SingleExpression EOS {
@@ -552,34 +576,15 @@ DefaultClause
       };
     }
 
-ExportStatement
-  = ExportToken _ head:ExportIdentifier tail:(__ "," __ ExportIdentifier)* {
-      return {
-        type: "ExportNamedDeclaration",
-        loc: location(),
-        declaration: null,
-        source: null,
-        specifiers: buildNamedExportList(head, tail, 3)
-      };
-  }
-
-ExportIdentifier
-  = "type" _ id:Identifier {
-    return {id: id, funkrit: "type"}
-  }
-  / id:Identifier {
-    return { id: id}
-  }
-
 ImportStatement
-  = "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "=" _ url:StringLiteral EOS {
+  = "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<~" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
 		specifiers: buildList(head, tail, 3)
     }
   }
-  / "{" _ "*" _ "!" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "=" _ url:StringLiteral EOS {
+  / "{" _ "*" _ "!" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<~" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -587,7 +592,7 @@ ImportStatement
         funkrit: {use: 'Exclusive'}
     }
   }
-  / "{" _ "*" _ "}" _ "=" _ url:StringLiteral EOS {
+  / "{" _ "*" _ "}" _ "<~" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -595,7 +600,7 @@ ImportStatement
         funkrit: {use: 'Full'}
     }
   }
-  / "{" __ head:Identifier tail:(__ "," __ Identifier)* __ "}" _ ":=" _ url:StringLiteral EOS {
+  / "{" __ head:Identifier tail:(__ "," __ Identifier)* __ "}" _ "<:" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -621,37 +626,57 @@ ImportSpec
   }
 
 DataDeclarationStatement
-  = id:TypeIdentifier _ ":=" _ declarator:DataDeclarator {
-      return "export type " + id + " = " + declarator + ";"
+  = id:TypeIdentifier _ ":=" __ head:DataDeclarator tail:(__ "|" __ DataDeclarator)* {
+     var decs = buildList(head, tail, 3)
+      return "export type " + id + " = " + decs.join(" | ") + ";";
     }
-
-TypeIdentifier
-  = id:Identifier "<" __ head:Identifier tail:(__ "," __ Identifier)* __ ">" {
-    return id.name + "<" + buildList(head, tail, 3).map(function(x){return x.name}).join(",") + ">";
-  }
-  / id:Identifier { return id.name }
 
 DataDeclarator
   = "{" __ head:DataObjectProp tail:(__ "," __ DataObjectProp)* __ "}" {
      return "{" + buildList(head, tail, 3).join(",") + "}"
   }
-  / head:Identifier tail:(__ "|" __ Identifier)* { 
-    return buildList(head, tail, 3).map(function(x){ return x.name }).join("|");
-  }
-  / id:Identifier { return id.name }
+  / id:TypeIdentifier { return id }
   / str:StringLiteral { return "'" + str.value + "'" }
   / num:NumericLiteral { return num }
   / bool:BooleanLiteral { return bool }
 
 DataObjectProp
-  = DataKeyValue
-  / key:Identifier "(" __ head:DataKeyValue tail:(__ "," __ DataKeyValue)* __ ")" __ ":" __ value:Identifier {
-    return key.name + "(" + buildList(head, tail,3).join(",") + "):" + value.name
+  = key:TypeIdentifier "()" _ ":" __ value:TypeIdentifier {
+    return key + "():" + value
+  }
+  / key:TypeIdentifier "(" __ head:DataKeyValue tail:(__ "," __ DataKeyValue)* __ ")" __ ":" __ value:TypeIdentifier {
+    return key + "(" + buildList(head, tail,3).join(",") + "):" + value
+  }
+  / DataKeyValue
+
+TypeIdentifier
+  = opt:"?"? lb:"["? head:CoreTypeIdentifier tail:(_ "," _ CoreTypeIdentifier)*  rb:"]"? arr:"[]"? {
+    return (opt || "") + (lb || "")
+            + buildList(head, tail, 3).join(",")
+            + (rb || "") + (arr || "")
+  }
+
+CoreTypeIdentifier
+  = GenericIdentifier
+  / FuncDeclaration
+  / id:Identifier { return id.name }
+
+GenericIdentifier
+  = id:Identifier "<" _ head:TypeIdentifier tail:(_ "," _ TypeIdentifier)* _ ">" {
+    return id.name + "<" + buildList(head, tail, 3).join(",") + ">";
+  }
+
+FuncDeclaration
+  = "()" __ "->" __ ret:TypeIdentifier {
+    return "() => " + ret
+  }
+  / "(" __ head:TypeIdentifier tail:(__ "," __ TypeIdentifier)* __ ")" __ "->" __ ret:TypeIdentifier {
+    return "(" + buildList(head, tail, 3).join(",") + ") => " + ret
   }
 
 DataKeyValue
-  = key:Identifier __ ":" __ value:Identifier "[]" {
-    return key.name + ":" + value.name + "[]"
+  = key:Identifier __ ":" __ value:TypeIdentifier {
+    return key.name + ":" + value
   }
   / key:Identifier __ ":" __ value:TypeIdentifier {
     return key.name + ":" + value
@@ -662,6 +687,7 @@ DataKeyValue
   / key:Identifier __ ":" __ value:DataDeclarator {
     return key.name + ":" + value
   }
+  / key:TypeIdentifier
 
 DataValueLiterals
   = str:StringLiteral { return "'" + str.value + "'" }
@@ -967,7 +993,41 @@ PropertyNameAndValueList
     }
 
 PropertyAssignment
-  = key:PropertyName __ ":" __ value:SingleExpression {
+  = type:(TypeAnnotation) __ key:PropertyName _ ":" __ value:SingleExpression {
+      if(value.type === "ArrowFunctionExpression" && type) {
+        if(type.gen) {
+            value.leadingComments = [{
+                type: "Block",
+                value: ":: " + type.gen
+            }];
+        }
+
+        if(type && type.body) {
+         var ans = getArgumentAnnotations(type.body); // [[number, boolean], [string']]
+
+         var args = ans[0]
+         var rest = ans[1]
+
+         for(var i = 0; i < value.params.length; i++) {
+            if(args[i]) {
+                value.params[i].trailingComments = [{
+                    type: "Block",
+                    value: ": " + args[i],
+                }];
+            }
+         }
+
+         if(rest) {
+             value.trailingComments = [{
+                type: "Block",
+                value: ": " + rest
+             }];
+         }
+        }
+      }
+      return { type: "Property", key: key, value: value, kind: "init" };
+    }
+  / key:PropertyName __ ":" __ value:SingleExpression {
       return { type: "Property", key: key, value: value, kind: "init" };
     }
   / key:Identifier {

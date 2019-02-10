@@ -1,8 +1,5 @@
-export RightPIO, LeftPIO
-use 'ramda'
-
-import 'pio' { purePIO }
-import 'either' { Right, Left, EitherT }
+{ purePIO } <~ 'pio' 
+{ Right, Left, EitherT } <~ 'either' 
 
 RightPIO :: a -> EitherT PIO Either a
 RightPIO = EitherT . purePIO . Right

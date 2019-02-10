@@ -1,10 +1,8 @@
-export funkrit
-
-import 'reader-either-io' { liftEIO,  }
-import 'cli-eio' { readOptions, readSource }
-import 'node-utils-io' { readExportedNames }
-import 'build-ast' { build }
-import 'compile' { compile }
+{ liftEIO,  } <~ 'reader-either-io' 
+{ readOptions, readSource } <~ 'cli-eio' 
+{ readExportedNames } <~ 'node-utils-io' 
+{ build } <~ 'build-ast' 
+{ compile } <~ 'compile' 
 
 funkrit = () -> {
 

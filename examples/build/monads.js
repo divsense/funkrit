@@ -2,12 +2,6 @@
 /*::
 import type { Identifier, Node } from '../../flow-libs/ast-types.js';
 */
-/*::
-export type FullImportDeclaration = Node | {
-    type:'FullImportDeclaration',
-    source:{value:string}
-};
-*/
 const {} = require("ramda");
 function moonit(str /* : string */) /* : string */{
   return "moon" + str;
@@ -35,20 +29,7 @@ function makeIdent(name /* : string */) /* : Identifier */{
     trailingComments: null
   };
 }
-function makeFunkritFullUse(name /* : string */) /* : FullImportDeclaration */{
-  return {
-    type: "FullImportDeclaration",
-    source: {
-      value: name
-    }
-  };
-}
-function aa() /* : Node */ {
-    return makeFunkritFullUse('foola')
-}
-
 module.exports = {
   moonit,
-  makeIdent,
-  makeFunkritFullUse
+  makeIdent
 };

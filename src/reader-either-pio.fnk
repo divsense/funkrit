@@ -1,12 +1,9 @@
 // Repio Monad
 // ReaderT EitherT Either PIO
 //
-export pureRepio, failRepio, runRepio, liftPIO, askRepio
-use 'ramda'
-
-import 'reader' { ReaderT, liftReaderT }
-import 'either' { runEitherT, liftEitherT }
-import 'either-pio' { RightPIO, LeftPIO }
+{ ReaderT, liftReaderT } <~ 'reader' 
+{ runEitherT, liftEitherT } <~ 'either' 
+{ RightPIO, LeftPIO } <~ 'either-pio' 
 
 pureRepio :: a -> ReaderT EitherPIO (Promise a)
 pureRepio = a -> ReaderT $ r -> RightPIO(a)

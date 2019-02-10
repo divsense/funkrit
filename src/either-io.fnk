@@ -1,8 +1,5 @@
-export RightIO, LeftIO, runEIO, Right, Left, isRight, isLeft
-use 'ramda'
-
-import 'io' { pureIO }
-import 'either' { Right, Left, EitherT, runEitherT, isRight, isLeft }
+{ pureIO } <~ 'io' 
+{ Right, Left, EitherT, runEitherT, isRight, isLeft } <~ 'either' 
 
 RightIO :: a -> EitherT IO Either a
 RightIO = EitherT . pureIO . Right

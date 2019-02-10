@@ -1,14 +1,12 @@
-export buildAst
+{ generate } <~ 'astring' 
+{ parse as pegParse } <~ 'peg-parser' 
+{ RightIO } <~ 'either-io' 
+{ logError } <~ 'node-utils-io' 
+{ readExports } <~ 'node-utils-eio' 
+{ liftIO, pureReio as pureR, askReio as askR } <~ 'reader-either-io' 
+{ getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse } <~ 'ast-utils' 
 
-import 'astring' { generate }
-import 'peg-parser' { parse as pegParse }
-import 'either-io' { RightIO }
-import 'node-utils-io' { logError }
-import 'node-utils-eio' { readExports }
-import 'reader-either-io' { liftIO, pureReio as pureR, askReio as askR }
-import 'ast-utils' { getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse }
-
-buildAst :: String -> Reio(AST)
+//buildAst :: string -> Reio(AST)
 buildAst = str -> {
 
     _ast_ <- map(pegParse, pureR(str))

@@ -1,8 +1,4 @@
-{ Node } := '../flow-libs/ast-types.js'
-
-ImportDeclarationFunkrit := Node | {
-
-}
+{ Node } <: '../flow-libs/ast-types.js'
 
 LibExports := {
   url: string,

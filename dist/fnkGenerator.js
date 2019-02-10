@@ -34,21 +34,52 @@ exports.fnkGenerator = Object.assign({}, baseGenerator, {
 
       state.write(node.name, node)
 
-      if (writeComments && node.comments != null && node.comments.length ) {
-          state.write(' /* ' + node.comments[0].value + " */")
+      if (writeComments && node.trailingComments != null && node.trailingComments.length ) {
+          state.write(' /* ' + node.trailingComments[0].value + " */")
       }
+  },
+  ArrowFunctionExpression: function(node, state) {
+
+      const { writeComments } = state
+      const { params, leadingComments, trailingComments } = node
+
+      if(writeComments && leadingComments && leadingComments.length) {
+          state.write('/* ' + leadingComments[0].value + ' */')
+      }
+
+      if (params != null) {
+          formatSequence(state, node.params)
+      }
+
+      if(writeComments && trailingComments && trailingComments.length) {
+          state.write('/* ' + trailingComments[0].value + ' */')
+      }
+
+      state.write(' => ')
+      if (node.body.type[0] === 'O') {
+          // Body is an object expression
+          state.write('(')
+          this.ObjectExpression(node.body, state)
+          state.write(')')
+      } else {
+          this[node.body.type](node.body, state)
+      }
+
   },
   FunctionDeclaration: function(node,state) {
 
       const { writeComments } = state
 
       state.write('function ' + node.id.name, node)
+      if( writeComments && node.leadingComments && node.leadingComments.length ) {
+          state.write('/* ' + node.leadingComments[0].value + ' */')
+      }
+
       formatSequence(state, node.params)
       state.write(' ')
 
-      if( writeComments && node.body.comments ) {
-          state.write('/* ' + node.body.comments[0].value + ' */')
-          node.body.comments = null
+      if( writeComments && node.trailingComments && node.trailingComments.length ) {
+          state.write('/* ' + node.trailingComments[0].value + ' */')
       }
 
       this[node.body.type](node.body, state)

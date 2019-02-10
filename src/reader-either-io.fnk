@@ -1,12 +1,9 @@
 // Reio Monad
 // ReaderT EitherT Either PIO
 //
-export pureReio, failReio, runReio, liftIO, askReio
-use 'ramda'
-
-import 'reader' { ReaderT, liftReaderT }
-import 'either' { runEitherT, liftEitherT }
-import 'either-io' { RightIO, LeftIO, runEIO }
+{ ReaderT, liftReaderT } <~ 'reader' 
+{ runEitherT, liftEitherT } <~ 'either' 
+{ RightIO, LeftIO, runEIO } <~ 'either-io' 
 
 pureReio :: a -> ReaderT EitherIO a
 pureReio = a -> ReaderT $ r -> RightIO(a)
