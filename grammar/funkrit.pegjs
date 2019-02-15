@@ -215,42 +215,59 @@
     }
 
     function trim(x){
-        return x.replace(/^(\s+|\()|(\s+|\))$/gm,'');
+        if(x[x.length - 1] === ")") {
+            return x.replace(/^(\s+|\()|(\s+|\))$/gm,'');
+        }
+        return x
     }
 
-    function getArgumentAnnotations(_ans) {
-        var ps = _ans.match(/\([^)(]+\)/g)
-        var ans = ps ? ps.reduce((m,a) => {
-          const ind = m.indexOf(a)
-          if(ind > -1) {
-            return m.replace(a, a.replace(/-/g, "="))
-          }
-          return m
-        }, _ans) : _ans;
-    
-        var xs = ans.split('->').map(trim).reduce(function(m,a) {
-            m.push(a.split(',').map(trim))
-            return m
-        }, [])
+    function sepByArrow(ann) {
+        var x = Array.from(ann).reduce(function(m,a) {
 
-        var args = xs.shift()
+            if(a == " ") return m;
 
-        var rest = xs.reduce(function(m,a) {
-            if(m !== '') {
-                m += ' => '
-            }
+            var res = m[0];
+            var state = m[1];
 
-            if(a.length === 0) {
-                return m + '()'
-            } else if(a.length === 1) {
-                return m + a[0]
+            if(a == "-" && state === 0) {
+                res += "="
             } else {
-                return m + '(' + a.join(',') + ')'
+                res += a
+                if(a == "(") {
+                    ++state;
+                }
+                else if(a == ")") {
+                    --state;
+                }
             }
+            return [res, state]
+        }, ["", 0])
 
-        }, '')
+        return x[0].split("=>").map(function(a) {
+            return Array.from(a).map(function(x){ return x === "-" ? "=" : x }).join("");
+        });
+    }
 
-        return [args, rest]
+    function sepByComma(str) {
+        var x = Array.from(str).reduce(function(m,a) {
+            var res = m[0];
+            var state = m[1];
+
+            if(a == "," && state === 0) {
+                res += "@"
+            } else {
+                res += a
+                if(a == "(") {
+                    ++state;
+                }
+                else if(a == ")") {
+                    --state;
+                }
+            }
+            return [res, state]
+        }, ["", 0])
+
+        return x[0].split("@")
     }
 
     function buildFunctionDeclaration(type, id, params, body) {
@@ -272,10 +289,9 @@
         }
 
       if(type && type.body) {
-         var ans = getArgumentAnnotations(type.body); // [[number, boolean], [string']]
-
-         var args = ans[0]
-         var rest = ans[1]
+          var ans = sepByArrow(type.body);
+          var args = sepByComma(trim(ans.shift()))
+          var rest = ans.join(" => ");
 
          for(var i = 0; i < params.length; i++) {
             if(args[i]) {
@@ -1003,10 +1019,9 @@ PropertyAssignment
         }
 
         if(type && type.body) {
-         var ans = getArgumentAnnotations(type.body); // [[number, boolean], [string']]
-
-         var args = ans[0]
-         var rest = ans[1]
+          var ans = sepByArrow(type.body);
+          var args = sepByComma(trim(ans.shift()))
+          var rest = ans.join(" => ");
 
          for(var i = 0; i < value.params.length; i++) {
             if(args[i]) {
