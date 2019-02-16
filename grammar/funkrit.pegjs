@@ -227,21 +227,22 @@
             if(a == " ") return m;
 
             var res = m[0];
-            var state = m[1];
+            var prev = m[1];
+            var state = m[2];
 
             if(a == "-" && state === 0) {
                 res += "="
             } else {
                 res += a
-                if(a == "(") {
+                if(a == "(" || a == "<") {
                     ++state;
                 }
-                else if(a == ")") {
+                else if(a == ")" || (prev !== "-" && a == ">")) {
                     --state;
                 }
             }
-            return [res, state]
-        }, ["", 0])
+            return [res, a, state]
+        }, ["", "", 0])
 
         return x[0].split("=>").map(function(a) {
             return Array.from(a).map(function(x){ return x === "-" ? "=" : x }).join("");
@@ -312,6 +313,30 @@
       return res;
     }
 
+    function buildPropertyExpression(sing, mult, props) {
+        if(props.length > 1) {
+            return {
+                type: "CallExpression",
+                callee: {
+                    type: "Identifier",
+                    name: mult
+                },
+                arguments: [{
+                    type: "ArrayExpression",
+                    elements: props
+                }]
+            };
+        } else {
+            return {
+                type: "CallExpression",
+                callee: {
+                    type: "Identifier",
+                    name: sing
+                },
+                arguments: props
+            };
+        }
+    }
 }
 
 /////////////////////////////////////////////
@@ -832,6 +857,8 @@ MultiplicativeOperator
 
 UnaryExpression
   = CallExpression
+  / PropertyExpression
+  / LensExpression
   / PrimaryExpression
   / operator:UnaryOperator __ argument:UnaryExpression {
       return {
@@ -936,10 +963,33 @@ SpreadElement
     }
 
 CalleeExpression
-    = Identifier
-    / "(" __ expression:SingleExpression __ ")" {
+    = PropertyExpression
+    / LensExpression
+    / ParenExpression
+    / Identifier
+
+PropertyExpression
+    = "#" head:PropertyAccess tail:("#" PropertyAccess)* {
+        return buildPropertyExpression("prop", "path", buildList(head, tail, 1) )
+    }
+
+LensExpression
+    = "@" head:PropertyAccess tail:("@" PropertyAccess)* {
+        return buildPropertyExpression("lensProp", "lensPath", buildList(head, tail, 1) )
+    }
+
+PropertyAccess
+    = "[" id:Identifier "]" {
+        return id
+    }
+    / id:Identifier {
+        return { type: "Literal", value: id.name };
+    }
+
+ParenExpression
+    = "(" __ expression:SingleExpression __ ")" {
         return expression; 
-}
+    }
 
 PrimaryExpression
   = ArrowFunction
