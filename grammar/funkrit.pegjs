@@ -214,6 +214,42 @@
         };
     }
 
+    function buildLiftExpression(head, tail) {
+        return tail.reduce(function(result, element) {
+          return {
+            type: "CallExpression",
+            callee: {
+                type: "MemberExpression",
+                computed: false,
+                object: element,
+                property: {
+                    type: "Identifier",
+                    name: "map"
+                }
+            },
+            arguments: [result]
+          };
+        }, head);
+    }
+
+    function buildApplicativeExpression(head, tail) {
+        return tail.reduce(function(result, element) {
+          return {
+            type: "CallExpression",
+            callee: {
+                type: "MemberExpression",
+                computed: false,
+                object: element,
+                property: {
+                    type: "Identifier",
+                    name: "ap"
+                }
+            },
+            arguments: [result]
+          };
+        }, head);
+    }
+
     function trim(x){
         if(x[x.length - 1] === ")") {
             return x.replace(/^(\s+|\()|(\s+|\))$/gm,'');
@@ -618,14 +654,14 @@ DefaultClause
     }
 
 ImportStatement
-  = "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<~" _ url:StringLiteral EOS {
+  = "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<+" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
 		specifiers: buildList(head, tail, 3)
     }
   }
-  / "{" _ "*" _ "!" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<~" _ url:StringLiteral EOS {
+  / "{" _ "*" _ "!" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<+" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -633,7 +669,7 @@ ImportStatement
         funkrit: {use: 'Exclusive'}
     }
   }
-  / "{" _ "*" _ "}" _ "<~" _ url:StringLiteral EOS {
+  / "{" _ "*" _ "}" _ "<+" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -641,7 +677,7 @@ ImportStatement
         funkrit: {use: 'Full'}
     }
   }
-  / "{" __ head:Identifier tail:(__ "," __ Identifier)* __ "}" _ "<:" _ url:StringLiteral EOS {
+  / "{" __ head:Identifier tail:(__ "," __ Identifier)* __ "}" _ "<:+" _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -767,10 +803,24 @@ DotWrapCompositionExpression
     }
 
 MonadPipeExpression
-  = head:FunctionCompositionExpression
-    tail:(__ MonadPipeToken __ FunctionCompositionExpression)*
+  = head:ApplicativeExpression
+    tail:(__ MonadPipeToken __ ApplicativeExpression)*
     { 
         return !tail.length ? head : buildMonadPipeExpression(head, extractList(tail, 3));
+    }
+
+ApplicativeExpression
+  = head:LiftExpression
+    tail:(__ ApplyToken __ LiftExpression)*
+    { 
+        return !tail.length ? head : buildApplicativeExpression(head, extractList(tail, 3));
+    }
+
+LiftExpression
+  = head:FunctionCompositionExpression
+    tail:(__ LiftToken __ FunctionCompositionExpression)*
+    { 
+        return !tail.length ? head : buildLiftExpression(head, extractList(tail, 3));
     }
 
 FunctionCompositionExpression
@@ -797,7 +847,7 @@ BitwiseORExpression
 
 BitwiseXORExpression
   = head:BitwiseANDExpression
-    tail:(__ "^" __ BitwiseANDExpression)*
+    tail:(__ $(!"<" "^" !">") __ BitwiseANDExpression)*
     { return buildBinaryExpression(head, tail); }
 
 BitwiseANDExpression
@@ -1302,7 +1352,6 @@ Keyword
   / IfToken
   / ReturnToken
   / SwitchToken
-  / DoMonadToken
 
 Literal
   = NullLiteral
@@ -1530,13 +1579,13 @@ NullToken       = "null"       !IdentifierPart
 ReturnToken     = "return"     !IdentifierPart
 SwitchToken     = "switch"     !IdentifierPart
 TrueToken       = "true"       !IdentifierPart
-DoMonadToken    = "do"         !IdentifierPart
 
 EllipsisToken   = "..."
 ArrowToken      = "->"
 JoinToken       = $(">>" !">")
 BindToken       = ">>="
 ConcatToken     = "++"
+LiftToken       = "<^>"
 ApplyToken      = "<*>"
 AltToken        = "<|>"
 DoArrowToken    = "<-"
@@ -1546,7 +1595,6 @@ MonadPipeToken    = ">=>"
 
 DotWrapCompositionToken
     = JoinToken { return "chain" }
-    / ApplyToken { return "ap" }
     / AltToken { return "alt" }
 
 DotCompositionToken

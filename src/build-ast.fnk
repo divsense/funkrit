@@ -1,10 +1,10 @@
-{ generate } <~ 'astring' 
-{ parse as pegParse } <~ 'peg-parser' 
-{ RightIO } <~ 'either-io' 
-{ logError } <~ 'node-utils-io' 
-{ readExports } <~ 'node-utils-eio' 
-{ liftIO, pureReio as pureR, askReio as askR } <~ 'reader-either-io' 
-{ getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse } <~ 'ast-utils' 
+{ generate } <+ 'astring' 
+{ parse as pegParse } <+ 'peg-parser' 
+{ RightIO } <+ 'either-io' 
+{ logError } <+ 'node-utils-io' 
+{ readExports } <+ 'node-utils-eio' 
+{ liftIO, pureReio as pureR, askReio as askR } <+ 'reader-either-io' 
+{ getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse } <+ 'ast-utils' 
 
 //buildAst :: string -> Reio(AST)
 buildAst = str -> {
