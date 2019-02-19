@@ -1,14 +1,12 @@
-Effect<A> := () -> A | Function
-
 IO_Monad<A> := {
-    run: Effect<A>,
+    run: () -> A,
     pure(A): IO_Monad<A>,
     map<B>((A) -> B): IO_Monad<B>,
     chain<B>((A) -> IO_Monad<B>): IO_Monad<B>,
-    ap<B>(IO_Monad<B>): IO_Monad<B>
+    ap<B>(IO_Monad<(A) -> B>): IO_Monad<B>
 }
 
-IO<A> :: Effect<A> -> IO_Monad<A>
+IO<A> :: (() -> A) -> IO_Monad<A>
 IO = run -> ({
     run,
 
@@ -19,18 +17,12 @@ IO = run -> ({
     map: f -> IO $ f . run,
 
     chain<B> :: (A -> IO_Monad<B>) -> IO_Monad<B>
-    chain: f -> IO $ runIO . f . run,
+    chain: f -> IO $ call . #run . f . run,
 
-    ap<B> :: IO_Monad<B> -> IO_Monad<B>
-    ap: mv -> IO $ () -> runIO $ apIO(run(), mv)
+    ap<B> :: IO_Monad<A -> B> -> IO_Monad<B>
+    ap: mb -> IO $ () -> ((call . #run) $ mb) $ run()
 })
-
-apIO<A,B> :: (Function, IO_Monad<A>) -> IO_Monad<B>
-apIO = (f, mb) -> map(f, mb)
 
 pureIO<A> :: A -> IO_Monad<A>
 pureIO = a -> IO $ () -> a
-
-runIO<A> :: IO_Monad<A> -> A
-runIO = x -> (call . prop('run'))(x)
 

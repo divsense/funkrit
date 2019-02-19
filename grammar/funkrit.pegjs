@@ -516,9 +516,15 @@ DeclarationStatement
   = type:(TypeAnnotation)? declaration:Declaration EOS {
 
       if(type) {
-          declaration.id.trailingComments = [{
+        var typegen = type.gen || "";
+        var value = type.body.length < 1 ? type.body
+                    : type.body.split('->').reduce(function(m,a) {
+                            return m === "" ? "(" + a + ")" : m + " => " + a;
+                        }, "")
+
+        declaration.id.trailingComments = [{
             type: "Block",
-            value: ": " + (type.gen || "") + (type.body || "").split('->').join('=>'),
+            value: ": " + typegen + value
         }];
       }
 

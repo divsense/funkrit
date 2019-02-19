@@ -1,7 +1,7 @@
 vIndex = lensIndex(0)
 sIndex = lensIndex(1)
 
-convergeState = f -> converge(call, [prop('run') . f . nth(0), nth(1)])
+convergeState = f -> converge(call, [#run . f . nth(0), nth(1)])
 
 State :: (s -> [a, s]) -> State (a, s)
 State = run -> ({
