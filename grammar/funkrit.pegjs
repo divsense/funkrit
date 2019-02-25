@@ -270,10 +270,10 @@
                 res += "="
             } else {
                 res += a
-                if(a == "(" || a == "<") {
+                if(a === "(" || a === "<" || a === "[") {
                     ++state;
                 }
-                else if(a == ")" || (prev !== "-" && a == ">")) {
+                else if(a === ")" || a === "]" || (prev !== "-" && a == ">")) {
                     --state;
                 }
             }
@@ -294,10 +294,10 @@
                 res += "@"
             } else {
                 res += a
-                if(a == "(") {
+                if(a === "(" || a === "[") {
                     ++state;
                 }
-                else if(a == ")") {
+                else if(a === ")" || a === "]") {
                     --state;
                 }
             }
@@ -742,11 +742,11 @@ TypeIdentifier
 CoreTypeIdentifier
   = GenericIdentifier
   / FuncDeclaration
-  / id:Identifier { return id.name }
+  / opt:"?"? id:Identifier { return (opt || "") + id.name }
 
 GenericIdentifier
-  = id:Identifier "<" _ head:TypeIdentifier tail:(_ "," _ TypeIdentifier)* _ ">" {
-    return id.name + "<" + buildList(head, tail, 3).join(",") + ">";
+  = opt:"?"? id:Identifier "<" _ head:TypeIdentifier tail:(_ "," _ TypeIdentifier)* _ ">" {
+    return (opt || "") + id.name + "<" + buildList(head, tail, 3).join(",") + ">";
   }
 
 FuncDeclaration

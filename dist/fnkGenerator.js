@@ -38,6 +38,24 @@ exports.fnkGenerator = Object.assign({}, baseGenerator, {
           state.write(' /* ' + node.trailingComments[0].value + " */")
       }
   },
+  ArrayPattern: function(node, state) {
+      baseGenerator.ArrayPattern(node, state)
+
+      const { writeComments } = state
+
+      if (writeComments && node.trailingComments != null && node.trailingComments.length ) {
+          state.write(' /* ' + node.trailingComments[0].value + " */")
+      }
+  },
+  ObjectPattern: function(node, state) {
+      baseGenerator.ObjectPattern(node, state)
+
+      const { writeComments } = state
+
+      if (writeComments && node.trailingComments != null && node.trailingComments.length ) {
+          state.write(' /* ' + node.trailingComments[0].value + " */")
+      }
+  },
   ArrowFunctionExpression: function(node, state) {
 
       const { writeComments } = state

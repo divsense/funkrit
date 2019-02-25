@@ -2,7 +2,6 @@
 .*/node_modules/.*
 <PROJECT_ROOT>/bin/
 <PROJECT_ROOT>/src/
-<PROJECT_ROOT>/build/
 <PROJECT_ROOT>/dist/
 <PROJECT_ROOT>/temp/
 <PROJECT_ROOT>/test/

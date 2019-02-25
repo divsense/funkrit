@@ -1,32 +1,5 @@
 BUILDDIR := build
-OBJS := $(addprefix $(BUILDDIR)/, \
-	peg-parser.js \
-	build-ast.js \
-	ast-utils.js \
-	io.js \
-	state.js \
-	reader.js \
-	either.js \
-	either-io.js \
-	either-pio.js \
-    reader-either-io.js \
-    reader-either-pio.js \
-	)
-
-TESTDIR := build/test
-TESTS := $(addprefix $(TESTDIR)/, \
-	build-ast.js \
-	ast-utils.js \
-	io.js \
-	state.js \
-	reader.js \
-	either.js \
-	either-io.js \
-	either-pio.js \
-	reader-either-io.js \
-	reader-either-pio.js \
-	node-utils-eio.js \
-	)
+OBJS := $(addprefix $(BUILDDIR)/, peg-parser.js io.js)
 
 BUILDEXMPLDIR := examples/build
 EXAMPLES := $(addprefix $(BUILDEXMPLDIR)/, monads.js monads.ast types.js use-types.js )
@@ -39,13 +12,6 @@ all: $(OBJS) examples
 
 dist: $(TESTS)
 	cp $(TESTDIR)/* dist
-
-test: $(TESTS)
-	npm test
-
-#node: build/funkrit-node.js
-
-#parser: build/peg-parser.js
 
 # Libs
 build/ast-utils.js: ast-utils.fnk
@@ -154,7 +120,6 @@ temp/test.ast: temp/test.js
 
 clean:
 	- rm build/*.js
-	- rm build/test/*.js
 
 .PHONY = all node clean temp test examples parser dist
 

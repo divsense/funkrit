@@ -1,28 +1,94 @@
+/**
+ * @file             : io.fnk
+ * License           : MIT
+ * @author           : Oleg Kirichenko <oleg@divsense.com>
+ * Date              : 23.02.2019
+ * Last Modified Date: 26.02.2019
+ * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
+ */
+Eff<A> := () -> A
+Err := [number, string]
+IO_Value<A> := [?Eff<A>, ?Err]
+
 IO_Monad<A> := {
-    run: () -> A,
+    run: ?Eff<A>,
+    error: ?Err,
     pure(A): IO_Monad<A>,
-    map<B>((A) -> B): IO_Monad<B>,
-    chain<B>((A) -> IO_Monad<B>): IO_Monad<B>,
-    ap<B>(IO_Monad<(A) -> B>): IO_Monad<B>
+    map<B>((A) -> B): IO_Monad<?B>,
+    chain<B>((A) -> IO_Monad<?B>): IO_Monad<?B>,
+    ap<B>(IO_Monad<(A) -> B>): IO_Monad<?B>
 }
 
-IO<A> :: (() -> A) -> IO_Monad<A>
-IO = run -> ({
+checkForNaN<A> :: A -> ?A
+checkForNaN = when(equals(NaN), always(null))
+
+checkForInfinity<A> :: A -> ?A
+checkForInfinity = when(equals(Infinity), always(null))
+
+safeMap<A,B> :: (A -> ?B) -> A -> ?B
+safeMap = f -> 
+      unless(isNil, checkForNaN)
+    . unless(isNil, checkForInfinity)
+    . tryCatch(f, always(null))
+
+mapIO<A,B> :: (A -> B) -> ?A -> IO_Monad<?B>
+mapIO = f -> a -> {
+    if(a) {
+        y = safeMap(f) $ a
+        if(y) {
+            return IO $ [() -> y, null]
+        } else {
+            return IO $ [null, [1, "IO::map - nil/exception result"]]
+        }
+    } else {
+        return IO $ [null, [0, "IO::map - unexpected null"]]
+    }
+}
+
+
+IO<A> :: [?Eff<A>, ?Err] -> IO_Monad<A>
+IO = [run, error] -> ({
     run,
+    error,
 
     pure :: A -> IO_Monad<A>
-    pure: a -> IO $ () -> a,
+    pure: a -> IO $ [always(a), null],
 
-    map<B> :: (A -> B) -> IO_Monad<B>
-    map: f -> IO $ f . run,
+    map<B> :: (A -> B) -> IO_Monad<?B>
+    map: f -> (error || !run) ? IO $ [null, error] : mapIO(f) $ run(),
 
-    chain<B> :: (A -> IO_Monad<B>) -> IO_Monad<B>
-    chain: f -> IO $ call . #run . f . run,
+    chain<B> :: (A -> IO_Monad<?B>) -> IO_Monad<?B>
+    chain: f -> {
+        if(error || !run) {
+            return IO $ [null, error]
+        } else {
+            x = run()
+            if(x) {
+                y = tryCatch(f, always(null)) $ x
+                if(y && (isNil $ #error(y))) {
+                    return IO $ [#run(y), null]
+                }
+            }
+            return IO $ [null, [0, "IO::chain - unexpected null"]]
+        }
+    },
 
-    ap<B> :: IO_Monad<A -> B> -> IO_Monad<B>
-    ap: mb -> IO $ () -> ((call . #run) $ mb) $ run()
+    ap<B> :: IO_Monad<A -> B> -> IO_Monad<?B>
+    ap: mb -> {
+        if(error) {
+            return IO $ [null, error]
+        } else if(!run) {
+            return IO $ [null, [0, "IO::ap - unexpected null"]]
+        } else {
+            f <- mb
+            return mapIO(f) $ run()
+        }
+    }
 })
 
 pureIO<A> :: A -> IO_Monad<A>
-pureIO = a -> IO $ () -> a
+pureIO = a -> IO $ [always(a), null]
+
+failIO :: Err -> IO_Monad<null>
+failIO = err -> IO $ [null, err]
 
