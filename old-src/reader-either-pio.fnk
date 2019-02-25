@@ -1,0 +1,22 @@
+// Repio Monad
+// ReaderT EitherT Either PIO
+//
+{ ReaderT, liftReaderT } <~ 'reader' 
+{ runEitherT, liftEitherT } <~ 'either' 
+{ RightPIO, LeftPIO } <~ 'either-pio' 
+
+pureRepio :: a -> ReaderT EitherPIO (Promise a)
+pureRepio = a -> ReaderT $ r -> RightPIO(a)
+
+failRepio :: a -> EitherT PIO Either (Promise a)
+failRepio = a -> ReaderT $ r -> LeftPIO(a)
+
+runRepio :: r -> ReaderT m a -> Promise a
+runRepio = (m, r) -> runEitherT $ prop('run', m) $ r
+
+liftPIO :: PIO a -> ReaderT PIO a
+liftPIO = liftReaderT . liftEitherT
+
+askRepio :: () -> ReaderT PIO r
+askRepio = () -> ReaderT $ RightPIO
+

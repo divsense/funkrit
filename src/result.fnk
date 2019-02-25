@@ -1,0 +1,51 @@
+Error := [number, string]
+
+Result_Monad<A> := {
+    value: A,
+    error: ?Error,
+    pure(A): Result_Monad<A>,
+    map<B>((A) -> B): Result_Monad<?B>,
+    chain<B>((A) -> Result_Monad<?B>): Result_Monad<?B>,
+    ap<B>(Result_Monad<(A) -> B>): Result_Monad<?B>
+}
+
+errorResult<A> :: (number, string) -> Result_Monad<?A>
+errorResult = (code, description) -> Result(null, [code, description])
+
+checkForAbnormal<A> :: ?A -> Result_Monad<?A>
+checkForAbnormal = a -> (a === null || a === Infinity || a === undefined) ? errorResult(0, "safeMap:abnormal") : Result(a)
+
+safeMap<A,B> :: (A -> B) -> A -> Result_Monad<?B>
+safeMap = f -> tryCatch(checkForAbnormal . f, always $ errorResult(0, "map:exception"))
+
+Result<A> :: (A, ?Error) -> Result_Monad<A>
+Result = (value, error) -> {
+    value,
+    error,
+
+    pure :: A -> Result_Monad<A>
+    pure: a -> Result(a),
+
+    map<B> :: (A -> B) -> Result_Monad<?B>
+    map: f -> error ? Result(null, error) : safeMap(f) $ value,
+
+    chain<B> :: (A -> Result_Monad<?B>) -> Result_Monad<?B>
+    chain: f -> {
+        if(error) {
+            return Result(null, error)
+        } else {
+            return tryCatch(f, always $ errorResult(0, "chain:exception")) $ value
+        }
+    },
+
+    ap<B> :: Result_Monad<A -> B> -> Result_Monad<?B>
+    ap: mb -> {
+        if(error) {
+            return Result(null, error)
+        } else {
+            f <- mb
+            return safeMap(f) $ value
+        }
+    }
+}
+

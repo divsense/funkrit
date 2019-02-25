@@ -1,0 +1,31 @@
+{ Node, ImportDeclaration } <:+ "../flow-libs/ast-types"
+{ IO } <:+ './io' 
+
+{ parse as pegParse } <+ './peg-parser' 
+{ pureIO } <+ './io' 
+
+/*{ getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse } <+ 'ast-utils' */
+
+makeFunkritFullUse :: string -> ImportDeclarationFunkrit
+makeFunkritFullUse = name -> ({
+  type: 'ImportDeclaration',
+  source: { value: name },
+  specifiers: [],
+  funkrit: { use: 'Full' }
+})
+
+addFunkritFullUse :: (string, Node) -> Node
+addFunkritFullUse = (name, ast) -> over(@body, prepend $ makeFunkritFullUse $ name, ast)
+
+build :: string -> IO<Node>
+build = str -> {
+
+    ast0 <- pegParse <^> pureIO(str)
+
+    ast1 = addFunkritFullUse("ramda", ast0)
+
+
+    return pureIO $ ast1
+
+}
+

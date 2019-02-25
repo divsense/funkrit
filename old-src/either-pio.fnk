@@ -1,0 +1,8 @@
+{ purePIO } <~ 'pio' 
+{ Right, Left, EitherT } <~ 'either' 
+
+RightPIO :: a -> EitherT PIO Either a
+RightPIO = EitherT . purePIO . Right
+
+LeftPIO :: a -> EitherT PIO Either a
+LeftPIO = EitherT . purePIO . Left
