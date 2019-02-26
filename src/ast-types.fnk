@@ -1,0 +1,217 @@
+Node := ArrayExpression | ArrayPattern | ArrowFunctionExpression | BinaryExpression | BlockStatement | BreakStatement | CallExpression | ConditionalExpression | EmptyStatement | ExpressionStatement | FunctionDeclaration | FunctionExpression | Identifier | IfStatement | ImportDeclaration | ImportSpecifier | Literal | LogicalExpression | MemberExpression | ObjectExpression | ObjectPattern | Program | ReturnStatement | SpreadElement | SwitchCase | SwitchStatement | UnaryExpression | VariableDeclaration | VariableDeclarator | ExportNamedDeclaration | ExportSpecifier 
+Statement := BlockStatement | BreakStatement | IfStatement | EmptyStatement | ExpressionStatement | ReturnStatement | SwitchStatement
+Expression := ArrayExpression | ArrowFunctionExpression | BinaryExpression | CallExpression | ConditionalExpression
+Pattern := ArrayPattern | Identifier | ObjectPattern
+
+ArrayExpression := {
+  type: 'ArrayExpression',
+  elements: Array<?Node>
+} 
+
+ArrayPattern := {
+  type: 'ArrayPattern',
+  elements: Array<?Node>
+} 
+
+ArrowFunctionExpression := {
+  type: 'ArrowFunctionExpression',
+  body: Node,
+  id?: Identifier,
+  async: boolean,
+  defaults: Array<?Expression>,
+  expression: boolean,
+  generator: boolean,
+  params: Array<Pattern>,
+  rest?: Identifier
+} 
+
+BinaryExpression := {
+  type: 'BinaryExpression',
+  left: Expression,
+  operator: BinaryOperator,
+  right: Expression
+} 
+
+BlockStatement := {
+  type: 'BlockStatement',
+  body: Array<Statement>
+} 
+
+BreakStatement := {
+  type: 'BreakStatement',
+  label: ?Identifier
+} 
+
+CallExpression := {
+  type: 'CallExpression',
+  arguments: Array<Node>,
+  callee: Expression
+} 
+
+ConditionalExpression := {
+  type: 'ConditionalExpression',
+  alternate: Expression,
+  consequent: Expression,
+  test: Expression
+} 
+
+EmptyStatement := {
+  type: 'EmptyStatement'
+} 
+
+ExpressionStatement := {
+  type: 'ExpressionStatement',
+  expression: Expression
+} 
+
+FunctionDeclaration := {
+  type: 'FunctionDeclaration',
+  body: BlockStatement,
+  id: Identifier,
+  async: boolean,
+  defaults: Array<?Expression>,
+  expression: boolean,
+  generator: boolean,
+  params: Array<Pattern>,
+  rest?: Identifier
+} 
+
+FunctionExpression := {
+  type: 'FunctionExpression',
+  body: BlockStatement,
+  id?: Identifier,
+  async: boolean,
+  defaults: Array<?Expression>,
+  expression: boolean,
+  generator: boolean,
+  params: Array<Pattern>,
+  rest?: Identifier
+} 
+
+Identifier := {
+  type: 'Identifier',
+  name: string
+} 
+
+IfStatement := {
+  type: 'IfStatement',
+  alternate?: Statement,
+  consequent: Statement,
+  test: Expression
+} 
+
+ImportDeclaration := {
+  type: 'ImportDeclaration',
+  specifiers: Array<Node>,
+  source: Literal,
+  funkrit: ?FunkritOption
+} 
+
+ImportSpecifier := {
+  type: 'ImportSpecifier',
+  imported: Node
+} 
+
+Literal := {
+  type: 'Literal',
+  regex?: RegExp,
+  value?: LiteralValue
+} 
+
+LogicalExpression := {
+  type: 'LogicalExpression',
+  left: Expression,
+  operator: LogicalOperator,
+  right: Expression
+} 
+
+MemberExpression := {
+  type: 'MemberExpression',
+  computed: boolean,
+  object: Expression,
+  property: Node
+} 
+
+ObjectExpression := {
+  type: 'ObjectExpression',
+  properties: Array<Node>
+} 
+
+ObjectPattern := {
+  type: 'ObjectPattern',
+  properties: Array<Node>
+} 
+
+Program := {
+  type: 'Program',
+  body: Array<Statement>
+} 
+
+ReturnStatement := {
+  type: 'ReturnStatement',
+  argument: ?Expression
+} 
+
+SpreadElement := {
+  type: 'SpreadElement',
+  argument: Expression
+} 
+
+SwitchCase := {
+  type: 'SwitchCase',
+  consequent: Array<Statement>,
+  test: ?Expression
+} 
+
+SwitchStatement := {
+  type: 'SwitchStatement',
+  cases: Array<SwitchCase>,
+  discriminant: Expression,
+  lexical: boolean
+} 
+
+UnaryExpression := {
+  type: 'UnaryExpression',
+  argument: Expression,
+  operator: UnaryOperator,
+  prefix: true
+} 
+
+VariableDeclaration := {
+  type: 'VariableDeclaration',
+  declarations: Array<VariableDeclarator>,
+  kind: 'const'
+} 
+
+VariableDeclarator := {
+  type: 'VariableDeclarator',
+  id: Pattern,
+  init: ?Expression
+} 
+
+ExportNamedDeclaration := {
+  type: 'ExportNamedDeclaration',
+  declaration: Node,
+  source: Literal,
+  specifiers: Array<Node>
+} 
+
+ExportSpecifier := {
+  type: 'ExportSpecifier',
+  local: Node,
+  exported: Node
+}
+
+ReExp := {
+    pattern: string,
+    flags: string
+}
+
+LiteralValue := string | boolean | number | RegExp
+
+BinaryOperator := '==' | '!=' | '===' | '!==' | '<' | '<=' | '>' | '>=' | '<<' | '>>' | '>>>' | '+' | '-' | '*' | '/' | '%' | '&' | '|' | '^' | '..'
+LogicalOperator := '||' | '&&'
+UnaryOperator := '-' | '+' | '!' | '~'
+
+FunkritOption := {use: string}
+

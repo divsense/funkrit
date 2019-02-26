@@ -1,15 +1,18 @@
-{ Node, ImportDeclaration } <:+ "../flow-libs/ast-types"
-{ IO } <:+ './io' 
+{ Node, ImportDeclaration } <: "./ast-types"
+{ IO_Monad } <: './io' 
 
 { parse as pegParse } <+ './peg-parser' 
-{ pureIO } <+ './io' 
+{ IO, pureIO } <+ './io' 
 
 /*{ getFunkritUseUrls, updateFunkritUseImports, addFunkritFullUse } <+ 'ast-utils' */
 
-makeFunkritFullUse :: string -> ImportDeclarationFunkrit
+makeFunkritFullUse :: string -> ImportDeclaration
 makeFunkritFullUse = name -> ({
   type: 'ImportDeclaration',
-  source: { value: name },
+  source: {
+    type: 'Literal',
+    value: name
+  },
   specifiers: [],
   funkrit: { use: 'Full' }
 })
