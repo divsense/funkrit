@@ -7,7 +7,7 @@
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 
-{ Result_Monad, Error } <:+ "./result"
+{ Result_Monad, Error } <: "./result"
 { Result } <+ "./result"
 
 Eff<A> := () -> Result_Monad<A>
@@ -17,7 +17,7 @@ IO_Monad<A> := {
     pure(A): IO_Monad<A>,
     map<B>((A) -> B): IO_Monad<B>,
     chain<B>((A) -> IO_Monad<B>): IO_Monad<B>,
-    ap<B>(IO_Monad<(A) -> B>): IO_Monad<?B>
+    ap<B>(IO_Monad<(A) -> B>): IO_Monad<B>
 }
 
 IO<A> :: Eff<A> -> IO_Monad<A>

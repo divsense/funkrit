@@ -1,0 +1,84 @@
+{ Node, Identifier, Property, VariableDeclaration, ExportNamedDeclaration, ExpressionStatement, ImportDeclaration, ImportSpecifier } <: './ast-types'
+
+toObjProp :: ImportSpecifier -> Property
+toObjProp = {local, imported} -> ({
+    type: "Property",
+    method: false,
+    shorthand: (local <.> name) === (imported <.> name),
+    computed: false,
+    key: imported,
+    value: local,
+    kind: "init"
+})
+
+toVarDecl :: ImportDeclaration -> VariableDeclaration
+toVarDecl = {source, specifiers} -> ({
+    type: "VariableDeclaration",
+    kind: "const",
+    declarations: [
+        {
+            type: "VariableDeclarator",
+            id: {
+                type: "ObjectPattern",
+                properties: toObjProp <^> specifiers
+            },
+            init: {
+                type: "CallExpression",
+                callee: {
+                    type: "Identifier",
+                    name: "require"
+                },
+                arguments: [source]
+            }
+        }
+    ]
+})
+
+toProp :: Identifier -> Property
+toProp = ident -> ({
+    type: "Property",
+    method: false,
+    shorthand: true,
+    computed: false,
+    key: ident,
+    value: ident,
+    kind: "init"
+})
+
+toExpr :: ExportNamedDeclaration -> ExpressionStatement
+toExpr = {specifiers} -> ({
+    type: "ExpressionStatement",
+    expression: {
+        type: "AssignmentExpression",
+        operator: "=",
+        left: {
+            type: "MemberExpression",
+            computed: false,
+            object: {
+                type: "Identifier",
+                name: "module"
+            },
+            property: {
+                type: "Identifier",
+                name: "exports"
+            }
+        },
+        right: {
+            type: "ObjectExpression",
+            properties: (toProp . #local) <^> specifiers
+        }
+    }
+})
+
+convertImports :: (Node[], Node) -> Node[]
+convertImports = (body, node) -> append((node <.> type) === 'ImportDeclaration' ? toVarDecl(node) : node, body)
+
+convertExports :: (Node[], Node) -> Node[]
+convertExports = (body, node) -> append((node <.> type) === 'ExportNamedDeclaration' ? toExpr(node) : node, body)
+
+import2require :: Node -> Node
+import2require = over(@body, reduce(convertImports, []))
+
+export2require :: Node -> Node
+export2require = over(@body, reduce(convertExports, []))
+

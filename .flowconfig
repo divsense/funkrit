@@ -3,8 +3,10 @@
 <PROJECT_ROOT>/bin/
 <PROJECT_ROOT>/src/
 <PROJECT_ROOT>/dist/
+<PROJECT_ROOT>/dist-old/
 <PROJECT_ROOT>/temp/
 <PROJECT_ROOT>/test/
+<PROJECT_ROOT>/examples/
 <PROJECT_ROOT>/*.js
 
 [include]

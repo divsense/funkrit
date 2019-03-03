@@ -294,10 +294,10 @@
                 res += "@"
             } else {
                 res += a
-                if(a === "(" || a === "[") {
+                if(a === "(" || a === "[" || a === "<") {
                     ++state;
                 }
-                else if(a === ")" || a === "]") {
+                else if(a === ")" || a === "]" || a === ">") {
                     --state;
                 }
             }
@@ -660,14 +660,14 @@ DefaultClause
     }
 
 ImportStatement
-  = "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<+" _ url:StringLiteral EOS {
+  = "{" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ ImportFunctionToken _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
 		specifiers: buildList(head, tail, 3)
     }
   }
-  / "{" _ "*" _ "!" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ "<+" _ url:StringLiteral EOS {
+  / "{" _ "*" _ "!" __ head:ImportSpec tail:(__ "," __ ImportSpec)* __ "}" _ ImportFunctionToken _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -675,7 +675,7 @@ ImportStatement
         funkrit: {use: 'Exclusive'}
     }
   }
-  / "{" _ "*" _ "}" _ "<+" _ url:StringLiteral EOS {
+  / "{" _ "*" _ "}" _ ImportFunctionToken _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -683,7 +683,7 @@ ImportStatement
         funkrit: {use: 'Full'}
     }
   }
-  / "{" __ head:Identifier tail:(__ "," __ Identifier)* __ "}" _ "<:+" _ url:StringLiteral EOS {
+  / "{" __ head:Identifier tail:(__ "," __ Identifier)* __ "}" _ ImportTypeToken _ url:StringLiteral EOS {
 	return {
 		type: "ImportDeclaration",
 		source: url,
@@ -724,11 +724,14 @@ DataDeclarator
   / bool:BooleanLiteral { return bool }
 
 DataObjectProp
-  = key:TypeIdentifier "()" _ ":" __ value:TypeIdentifier {
-    return key + "():" + value
+  = key:TypeIdentifier "()" opt:"?"? _ ":" __ value:TypeIdentifier {
+    return key + "()" + (opt || "") + ":" + value
   }
-  / key:TypeIdentifier "(" __ head:DataKeyValue tail:(__ "," __ DataKeyValue)* __ ")" __ ":" __ value:TypeIdentifier {
-    return key + "(" + buildList(head, tail,3).join(",") + "):" + value
+  / key:TypeIdentifier "(" __ head:DataKeyValue tail:(__ "," __ DataKeyValue)* __ ")" opt:"?"? __ ":" __ value:TypeIdentifier {
+    return key + "(" + buildList(head, tail,3).join(",") + ")" + (opt || "") + ":" + value
+  }
+  / "[string]" _ ":" _ value:TypeIdentifier {
+    return "[string]:" + value
   }
   / DataKeyValue
 
@@ -758,17 +761,17 @@ FuncDeclaration
   }
 
 DataKeyValue
-  = key:Identifier __ ":" __ value:TypeIdentifier {
-    return key.name + ":" + value
+  = key:Identifier opt:"?" _ ":" __ value:TypeIdentifier {
+    return key.name + (opt || "") + ":" + value
   }
-  / key:Identifier __ ":" __ value:TypeIdentifier {
-    return key.name + ":" + value
+  / key:Identifier opt:"?"? _ ":" __ value:TypeIdentifier {
+    return key.name + (opt || "") + ":" + value
   }
-  / key:Identifier __ ":" __ value:DataValueLiterals {
-    return key.name + ":" + value
+  / key:Identifier opt:"?"? _ ":" __ value:DataValueLiterals {
+    return key.name  + (opt || "") + ":" + value
   }
-  / key:Identifier __ ":" __ value:DataDeclarator {
-    return key.name + ":" + value
+  / key:Identifier opt:"?"? _ ":" __ value:DataDeclarator {
+    return key.name  + (opt || "") + ":" + value
   }
   / key:TypeIdentifier
 
@@ -778,7 +781,8 @@ DataValueLiterals
   / bool:BooleanLiteral { return bool.value }
 
 SingleExpression
-    = ConditionalExpression
+    = MemberExpression
+    / ConditionalExpression
 
 ConditionalExpression
     = test:DotCompositionExpression __
@@ -1240,6 +1244,23 @@ ObjectPattern
       };
     }
 
+MemberExpression
+  = head: Identifier  "[" _ property: NumericLiteral _ "]" {
+        return {
+          type: "MemberExpression",
+          object: head,
+          property: property,
+          computed: true
+        };
+    }
+  / head: Identifier _ UnsafeMemberToken _ property: Identifier {
+        return {
+          type: "MemberExpression",
+          object: head,
+          property: property,
+          computed: false
+        };
+  }
 
 //=============================================================================
 
@@ -1595,8 +1616,12 @@ LiftToken       = "<^>"
 ApplyToken      = "<*>"
 AltToken        = "<|>"
 DoArrowToken    = "<-"
+UnsafeMemberToken     = "<.>"
 
-FunctionCompositionToken = $(![0-9] "." ![0-9])
+ImportFunctionToken = "<+"
+ImportTypeToken = "<:"
+
+FunctionCompositionToken = $(![0-9<] "." ![0-9>])
 MonadPipeToken    = ">=>"
 
 DotWrapCompositionToken

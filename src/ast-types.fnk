@@ -1,16 +1,16 @@
-Node := ArrayExpression | ArrayPattern | ArrowFunctionExpression | BinaryExpression | BlockStatement | BreakStatement | CallExpression | ConditionalExpression | EmptyStatement | ExpressionStatement | FunctionDeclaration | FunctionExpression | Identifier | IfStatement | ImportDeclaration | ImportSpecifier | Literal | LogicalExpression | MemberExpression | ObjectExpression | ObjectPattern | Program | ReturnStatement | SpreadElement | SwitchCase | SwitchStatement | UnaryExpression | VariableDeclaration | VariableDeclarator | ExportNamedDeclaration | ExportSpecifier 
+Node := AssignmentExpression | ArrayExpression | ArrayPattern | ArrowFunctionExpression | BinaryExpression | BlockStatement | BreakStatement | CallExpression | ConditionalExpression | EmptyStatement | ExpressionStatement | FunctionDeclaration | FunctionExpression | Identifier | IfStatement | ImportDeclaration | ImportSpecifier | Literal | LogicalExpression | MemberExpression | ObjectExpression | ObjectPattern | Program | ReturnStatement | SpreadElement | SwitchCase | SwitchStatement | UnaryExpression | VariableDeclaration | VariableDeclarator | ExportNamedDeclaration | ExportSpecifier | Property | AssignmentPattern
 Statement := BlockStatement | BreakStatement | IfStatement | EmptyStatement | ExpressionStatement | ReturnStatement | SwitchStatement
-Expression := ArrayExpression | ArrowFunctionExpression | BinaryExpression | CallExpression | ConditionalExpression
-Pattern := ArrayPattern | Identifier | ObjectPattern
+Expression := ObjectExpression | AssignmentExpression | ArrayExpression | ArrowFunctionExpression | BinaryExpression | CallExpression | ConditionalExpression | Identifier
+Pattern := ArrayPattern | Identifier | ObjectPattern | MemberExpression | AssignmentPattern
 
 ArrayExpression := {
   type: 'ArrayExpression',
-  elements: Array<?Node>
+  elements: Array<Node>
 } 
 
 ArrayPattern := {
   type: 'ArrayPattern',
-  elements: Array<?Node>
+  elements: Array<Node>
 } 
 
 ArrowFunctionExpression := {
@@ -32,6 +32,19 @@ BinaryExpression := {
   right: Expression
 } 
 
+AssignmentExpression := {
+  type: 'AssignmentExpression',
+  left: Pattern,
+  operator: string,
+  right: Expression
+}
+
+AssignmentPattern := {
+  type: 'AssignmentPattern',
+  left: Pattern,
+  right: Expression
+}
+
 BlockStatement := {
   type: 'BlockStatement',
   body: Array<Statement>
@@ -39,7 +52,7 @@ BlockStatement := {
 
 BreakStatement := {
   type: 'BreakStatement',
-  label: ?Identifier
+  label?: Identifier
 } 
 
 CallExpression := {
@@ -102,14 +115,15 @@ IfStatement := {
 
 ImportDeclaration := {
   type: 'ImportDeclaration',
-  specifiers: Array<Node>,
+  specifiers: Array<ImportSpecifier>,
   source: Literal,
-  funkrit: ?FunkritOption
+  funkrit?: {use: string}
 } 
 
 ImportSpecifier := {
   type: 'ImportSpecifier',
-  imported: Node
+  imported: Identifier,
+  local: Identifier
 } 
 
 Literal := {
@@ -149,7 +163,7 @@ Program := {
 
 ReturnStatement := {
   type: 'ReturnStatement',
-  argument: ?Expression
+  argument?: Expression
 } 
 
 SpreadElement := {
@@ -160,7 +174,7 @@ SpreadElement := {
 SwitchCase := {
   type: 'SwitchCase',
   consequent: Array<Statement>,
-  test: ?Expression
+  test?: Expression
 } 
 
 SwitchStatement := {
@@ -186,20 +200,20 @@ VariableDeclaration := {
 VariableDeclarator := {
   type: 'VariableDeclarator',
   id: Pattern,
-  init: ?Expression
+  init?: Expression
 } 
 
 ExportNamedDeclaration := {
   type: 'ExportNamedDeclaration',
   declaration: Node,
   source: Literal,
-  specifiers: Array<Node>
+  specifiers: Array<ExportSpecifier>
 } 
 
 ExportSpecifier := {
   type: 'ExportSpecifier',
-  local: Node,
-  exported: Node
+  local: Identifier,
+  exported: Identifier
 }
 
 ReExp := {
@@ -207,11 +221,19 @@ ReExp := {
     flags: string
 }
 
+Property := {
+  type: 'Property',
+  computed: boolean,
+  key: Node,
+  kind: string,
+  method: boolean,
+  shorthand: boolean,
+  value: Node
+}
+
 LiteralValue := string | boolean | number | RegExp
 
 BinaryOperator := '==' | '!=' | '===' | '!==' | '<' | '<=' | '>' | '>=' | '<<' | '>>' | '>>>' | '+' | '-' | '*' | '/' | '%' | '&' | '|' | '^' | '..'
 LogicalOperator := '||' | '&&'
 UnaryOperator := '-' | '+' | '!' | '~'
-
-FunkritOption := {use: string}
 

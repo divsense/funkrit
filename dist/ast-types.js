@@ -1,0 +1,48 @@
+// @flow
+/*::
+export type Node = AssignmentExpression | ArrayExpression | ArrayPattern | ArrowFunctionExpression | BinaryExpression | BlockStatement | BreakStatement | CallExpression | ConditionalExpression | EmptyStatement | ExpressionStatement | FunctionDeclaration | FunctionExpression | Identifier | IfStatement | ImportDeclaration | ImportSpecifier | Literal | LogicalExpression | MemberExpression | ObjectExpression | ObjectPattern | Program | ReturnStatement | SpreadElement | SwitchCase | SwitchStatement | UnaryExpression | VariableDeclaration | VariableDeclarator | ExportNamedDeclaration | ExportSpecifier | Property | AssignmentPattern;
+export type Statement = BlockStatement | BreakStatement | IfStatement | EmptyStatement | ExpressionStatement | ReturnStatement | SwitchStatement;
+export type Expression = ObjectExpression | AssignmentExpression | ArrayExpression | ArrowFunctionExpression | BinaryExpression | CallExpression | ConditionalExpression | Identifier;
+export type Pattern = ArrayPattern | Identifier | ObjectPattern | MemberExpression | AssignmentPattern;
+export type ArrayExpression = {type:'ArrayExpression',elements:Array<Node>};
+export type ArrayPattern = {type:'ArrayPattern',elements:Array<Node>};
+export type ArrowFunctionExpression = {type:'ArrowFunctionExpression',body:Node,id?:Identifier,async:boolean,defaults:Array<?Expression>,expression:boolean,generator:boolean,params:Array<Pattern>,rest?:Identifier};
+export type BinaryExpression = {type:'BinaryExpression',left:Expression,operator:BinaryOperator,right:Expression};
+export type AssignmentExpression = {type:'AssignmentExpression',left:Pattern,operator:string,right:Expression};
+export type AssignmentPattern = {type:'AssignmentPattern',left:Pattern,right:Expression};
+export type BlockStatement = {type:'BlockStatement',body:Array<Statement>};
+export type BreakStatement = {type:'BreakStatement',label?:Identifier};
+export type CallExpression = {type:'CallExpression',arguments:Array<Node>,callee:Expression};
+export type ConditionalExpression = {type:'ConditionalExpression',alternate:Expression,consequent:Expression,test:Expression};
+export type EmptyStatement = {type:'EmptyStatement'};
+export type ExpressionStatement = {type:'ExpressionStatement',expression:Expression};
+export type FunctionDeclaration = {type:'FunctionDeclaration',body:BlockStatement,id:Identifier,async:boolean,defaults:Array<?Expression>,expression:boolean,generator:boolean,params:Array<Pattern>,rest?:Identifier};
+export type FunctionExpression = {type:'FunctionExpression',body:BlockStatement,id?:Identifier,async:boolean,defaults:Array<?Expression>,expression:boolean,generator:boolean,params:Array<Pattern>,rest?:Identifier};
+export type Identifier = {type:'Identifier',name:string};
+export type IfStatement = {type:'IfStatement',alternate?:Statement,consequent:Statement,test:Expression};
+export type ImportDeclaration = {type:'ImportDeclaration',specifiers:Array<ImportSpecifier>,source:Literal,funkrit?:{use:string}};
+export type ImportSpecifier = {type:'ImportSpecifier',imported:Identifier,local:Identifier};
+export type Literal = {type:'Literal',regex?:RegExp,value?:LiteralValue};
+export type LogicalExpression = {type:'LogicalExpression',left:Expression,operator:LogicalOperator,right:Expression};
+export type MemberExpression = {type:'MemberExpression',computed:boolean,object:Expression,property:Node};
+export type ObjectExpression = {type:'ObjectExpression',properties:Array<Node>};
+export type ObjectPattern = {type:'ObjectPattern',properties:Array<Node>};
+export type Program = {type:'Program',body:Array<Statement>};
+export type ReturnStatement = {type:'ReturnStatement',argument?:Expression};
+export type SpreadElement = {type:'SpreadElement',argument:Expression};
+export type SwitchCase = {type:'SwitchCase',consequent:Array<Statement>,test?:Expression};
+export type SwitchStatement = {type:'SwitchStatement',cases:Array<SwitchCase>,discriminant:Expression,lexical:boolean};
+export type UnaryExpression = {type:'UnaryExpression',argument:Expression,operator:UnaryOperator,prefix:true};
+export type VariableDeclaration = {type:'VariableDeclaration',declarations:Array<VariableDeclarator>,kind:'const'};
+export type VariableDeclarator = {type:'VariableDeclarator',id:Pattern,init?:Expression};
+export type ExportNamedDeclaration = {type:'ExportNamedDeclaration',declaration:Node,source:Literal,specifiers:Array<ExportSpecifier>};
+export type ExportSpecifier = {type:'ExportSpecifier',local:Identifier,exported:Identifier};
+export type ReExp = {pattern:string,flags:string};
+export type Property = {type:'Property',computed:boolean,key:Node,kind:string,method:boolean,shorthand:boolean,value:Node};
+export type LiteralValue = string | boolean | number | RegExp;
+export type BinaryOperator = '==' | '!=' | '===' | '!==' | '<' | '<=' | '>' | '>=' | '<<' | '>>' | '>>>' | '+' | '-' | '*' | '/' | '%' | '&' | '|' | '^' | '..';
+export type LogicalOperator = '||' | '&&';
+export type UnaryOperator = '-' | '+' | '!' | '~';
+*/
+const {} = require("ramda");
+module.exports = {};

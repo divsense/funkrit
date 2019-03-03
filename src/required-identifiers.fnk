@@ -1,0 +1,58 @@
+{ Node } <: "./ast-types"
+{ Context, Visitors } <: './ast-travel'
+
+{ travelProgram } <+ './ast-travel'
+
+considerName :: (string, string[]) -> string[]
+considerName = (name, result) -> indexOf(name, result) > -1 ? result : append(name, result)
+
+identifier :: Context<string[]> -> string[]
+identifier = ({result, parentType, parentProperty, node}) -> {
+
+    if( (node <.> type) !== 'Identifier') {
+        return result
+    }
+
+    switch(parentType) {
+        case 'ReturnStatement':
+        case 'ExpressionStatement':
+        case 'IfStatement':
+        case 'SwitchStatement':
+        case 'CallExpression':
+        case 'ArrayExpression':
+        case 'BinaryExpression':
+        case 'SpreadElement':
+        case 'RestElement':
+        case 'UpdateExpression':
+        case 'UnaryExpression':
+        case 'LogicalExpression':
+        case 'BinaryExpression':
+        case 'AssignmentExpression':
+        case 'AssignmentPattern':
+        case 'ConditionalExpression':
+            return considerName(node <.> name, result)
+
+        case 'VariableDeclarator':
+            if(parentProperty === 'init') {
+                return considerName(node <.> name, result)
+            }
+            break
+        case 'Property':
+            if(parentProperty === 'value') {
+                return considerName(node <.> name, result)
+            }
+            break
+        case 'MemeberExpression':
+            if(parentProperty === 'object') {
+                return considerName(node <.> name, result)
+            }
+            break
+    }
+
+    return result
+}
+
+requiredIdentifiers :: Node -> string[]
+requiredIdentifiers = travelProgram([], {Identifier: identifier})
+
+

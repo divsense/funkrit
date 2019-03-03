@@ -1,0 +1,110 @@
+{ Node, ImportDeclaration, ImportSpecifier } <: "./ast-types"
+{ Context, Visitors } <: './ast-travel'
+{ Result_Monad } <: './result' 
+
+{ travel } <+ './ast-travel'
+{ parse as pegParse } <+ './peg-parser' 
+{ Result } <+ './result'
+
+Settings := {
+    code: string,
+    commonJs: boolean,
+    stdLib: {
+        source: string,
+        names: string[]
+    }
+}
+
+Names := string[]
+
+build :: Settings -> Result<Node>
+build = {code, commonJs, stdLib} -> {
+
+    process =  .  
+               . selectUsedNames
+               . addFunkritFullUse(#source(stdLib))
+               . pegParse
+
+
+    return process <^> Result(code)
+
+}
+
+makeFunkritFullUse :: string -> ImportDeclaration
+makeFunkritFullUse = name -> ({
+  type: 'ImportDeclaration',
+  source: {
+    type: 'Literal',
+    value: name
+  },
+  specifiers: [],
+  funkrit: { use: 'Full' }
+})
+
+addFunkritFullUse :: string -> Node -> Node
+addFunkritFullUse = name -> ast -> over(@body, prepend $ makeFunkritFullUse $ name, ast)
+
+identifier :: Context<Names> -> Names
+identifier = ({result, parentType, parentProperty, node}) -> {
+
+    if( (node <.> type) !== 'Identifier') {
+        return result
+    }
+
+    switch(parentType) {
+        case 'ReturnStatement':
+        case 'ExpressionStatement':
+        case 'IfStatement':
+        case 'SwitchStatement':
+        case 'CallExpression':
+        case 'ArrayExpression':
+        case 'BinaryExpression':
+        case 'SpreadElement':
+        case 'RestElement':
+        case 'UpdateExpression':
+        case 'UnaryExpression':
+        case 'LogicalExpression':
+        case 'BinaryExpression':
+        case 'AssignmentExpression':
+        case 'AssignmentPattern':
+        case 'ConditionalExpression':
+            return append(node <.> name, result)
+
+        case 'VariableDeclarator':
+            if(parentProperty === 'init') {
+                return append(node <.> name, result)
+            }
+            break
+        case 'Property':
+            if(parentProperty === 'value') {
+                return append(node <.> name, result)
+            }
+            break
+        case 'MemeberExpression':
+            if(parentProperty === 'object') {
+                return append(node <.> name, result)
+            }
+            break
+    }
+
+    return result
+}
+
+extractUsedNames :: string[] -> (ImportSpecifier[], ImportSpecifier) -> ImportSpecifier[]
+extractUsedNames = names -> (m, spec) -> indexOf(path(['local', 'name'], spec), names) === -1 ? m : append(spec, m)
+
+usedNames :: string[] -> Node -> Node
+usedNames = names -> node -> ((node <.> type) === 'ImportDeclaration' && pathEq(['funkrit', 'importMode'], 'Full', node))
+        ? over(@specifiers, reduce(extractUsedNames(names), []), node) : node
+
+
+selectUsedNames :: Node -> Node
+selectUsedNames = ast -> {
+    visitors = { Identifier: identifier }
+
+    {result} = travel({result: [], parentType: '', visitors}, {property: 'program', node: ast})
+
+    return over(@body, map(usedNames(result)), ast)
+
+}
+

@@ -1,0 +1,158 @@
+{ Node, Program, BlockStatement } <: './ast-types'
+
+PNode := {
+    property: string,
+    node: Node
+}
+
+Context<A> := {
+    result: A,
+    node: Node,
+    parentType: string,
+    parentProperty: string
+}
+
+Visitors<A> := {
+    [string]: (Context<A>) -> A
+}
+
+State<A> := {
+    result: A,
+    parentType: string,
+    visitors: Visitors<A>
+}
+
+travelProgram<A> :: (A, Visitors<A>) -> Node -> A
+travelProgram = (res, visitors) -> node -> {
+    {result} = travel({result: res, parentType: '', visitors}, {property: 'program', node})
+    return result
+}
+
+travel<A> :: (State<A>, PNode) -> State<A>
+travel = (state, pnode) -> {
+    {result, parentType, visitors} = state
+    {property, node} = pnode
+
+    handler = prop(node <.> type, visitors)
+
+    newResult = handler ? handler({result, node, parentType, parentProperty: property}) : result
+
+    return merge(reduce(travel, {result: newResult, parentType: node <.> type, visitors}, getChildNodes(node)), {parentType, visitors})
+}
+
+pnode :: string -> Node -> PNode
+pnode = property -> node -> ({property, node})
+
+apnode :: (string, ?Node) -> PNode[]
+apnode = (property, node) -> node ? [{property, node}] : []
+
+programBody :: Program -> PNode[]
+programBody = (map $ pnode $ 'body') . #body
+
+getChildNodes :: Node -> PNode[]
+getChildNodes = node -> {
+
+    switch( node <.> type ) {
+        case 'Program':
+            return programBody(node)
+
+        case 'BlockStatement':
+            return map(pnode('body'), (node <.> body) || [])
+
+        case 'ExpressionStatement':
+            return apnode('expression', node <.> expression)
+
+
+        case 'IfStatement':
+            if_start = concat(apnode('test', node <.> test), apnode('consequent', node <.> consequent))
+            if_alt = apnode('alternate', node <.> alternate)
+            return concat(if_start, if_alt)
+
+        case 'SwitchStatement':
+            return concat(apnode('discriminant', node <.> discriminant), map(pnode('cases'), node <.> cases))
+
+        case 'SwitchCase':
+            tst = apnode('test', node <.> test)
+            cons = map(pnode('consequent'), node <.> consequent)
+            return concat(tst, cons)
+
+        case 'ReturnStatement':
+            return apnode('argument', node <.> argument)
+
+        case 'FunctionExpression':
+        case 'FunctionDeclaration':
+            nid = apnode('id', node <.> id)
+            params = map(pnode('params'), (node <.> params) || [])
+            body = apnode('body', node <.> body)
+            fdec = concat(nid, params)
+            return concat(fdec, body)
+
+        case 'VariableDeclaration':
+            return map(pnode('declarations'), node <.> declarations)
+
+        case 'VariableDeclarator':
+            vnid = apnode('id', node <.> id)
+            vinit = apnode('init', node <.> init)
+            return concat(vnid, vinit)
+
+        case 'ArrowFunctionExpression':
+            afparams = map(pnode('params'), (node <.> params) || [])
+            afbody = apnode('body', node <.> body)
+            return concat(afparams, afbody)
+
+        case 'ArrayPattern':
+        case 'ArrayExpression':
+            elems = filter(not . isNil) . #elements
+            return map(pnode('elements'), elems(node))
+
+        case 'ObjectExpression':
+            return map(pnode('properties'), node <.> properties)
+
+        case 'Property':
+            key = apnode('key', node <.> key)
+            value = (node <.> shorthand) ? [] : apnode('value', node <.> value)
+            return concat(key, value)
+
+        case 'SpreadElement':
+        case 'UnaryExpression':
+            return apnode('argument', node <.> argument)
+
+        case 'LogicalExpression':
+        case 'BinaryExpression':
+        case 'AssignmentExpression':
+        case 'AssignmentPattern':
+            return concat(apnode('left', node <.> left), apnode('right', node <.> right))
+
+        case 'ConditionalExpression':
+            return concat(
+                  concat(apnode('test', node <.> test), apnode('consequent', node <.> consequent)),
+                  apnode('alternate', node <.> alternate)
+            )
+
+        case 'CallExpression':
+            return concat(apnode('callee', node <.> callee), map(pnode('arguments'), node <.> arguments))
+
+        case 'MemberExpression':
+            return concat(apnode('object', node <.> object), apnode('property', node <.> property))
+
+        case 'ImportDeclaration':
+            return concat(map(pnode('specifiers'), node <.> specifiers), apnode('source', node <.> source))
+
+        case 'ImportSpecifier':
+            return concat(apnode('imported', node <.> imported), apnode('local', node <.> local))
+    
+        case 'ExportNamedDeclaration':
+            decl = apnode('declaratio', node <.> declaration)
+            src = apnode('source', node <.> source)
+            head = concat(decl, map(pnode('specifiers'), node <.> specifiers))
+            return concat(head, src)
+
+        case 'ExportSpecifier':
+            return concat(apnode('local', node <.> local), apnode('exported', node <.> exported))
+
+        case 'ObjectPattern':
+            return map(pnode('properties'), node <.> properties)
+    }
+    return []
+}
+

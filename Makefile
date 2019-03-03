@@ -2,9 +2,12 @@ BUILDDIR := build
 OBJS := $(addprefix $(BUILDDIR)/, \
 	peg-parser.js \
 	io.js \
-	ast-build.js \
+	ast-nodejs.js \
 	ast-types.js \
+	ast-travel.js \
 	result.js \
+	required-identifiers.js \
+	commonjs.js \
 )
 
 BUILDEXMPLDIR := examples/build
@@ -16,29 +19,20 @@ vpath %.fnk examples
 
 all: $(OBJS) examples
 
-dist: $(TESTS)
-	cp $(TESTDIR)/* dist
+dist: $(OBJS)
+	cp $(BUILDDIR)/* dist
 
 # Libs
-build/ast-utils.js: ast-utils.fnk
-	node ./bin/funkrit-node.js -o $@ $<
-
 build/io.js: io.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
 build/result.js: result.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
-build/state.js: state.fnk
+build/required-identifiers.js: required-identifiers.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
-build/reader.js: reader.fnk
-	node ./bin/funkrit-node.js -o $@ $<
-
-build/reader-either-io.js: reader-either-io.fnk
-	node ./bin/funkrit-node.js -o $@ $<
-
-build/reader-either-pio.js: reader-either-pio.fnk
+build/commonjs.js: commonjs.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
 # Parser
@@ -49,10 +43,13 @@ build/peg-parser.js: funkrit.pegjs
 build/funkrit-node.js: webpack.config.js $(OBJS)
 	./node_modules/.bin/webpack --config $@
 
-build/ast-build.js: ast-build.fnk build/peg-parser.js
+build/ast-nodejs.js: ast-nodejs.fnk build/peg-parser.js
 	node ./bin/funkrit-node.js -o $@ $<
 
 build/ast-types.js: ast-types.fnk
+	node ./bin/funkrit-node.js -o $@ $<
+
+build/ast-travel.js: ast-travel.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
 # Examples
@@ -75,6 +72,8 @@ examples/build/use-types.js: use-types.fnk
 
 temp: temp/test.ast
 
+play: temp/play.js temp/play.ast
+
 temp/play.js: temp/play.fnk
 	node ./bin/funkrit-node.js -o $@ $<
 
@@ -87,5 +86,5 @@ temp/test.ast: temp/test.js
 clean:
 	- rm build/*.js
 
-.PHONY = all node clean temp test examples parser dist
+.PHONY = all node clean temp examples parser dist play
 

@@ -11,9 +11,12 @@ const fs = require('fs')
 const path = require('path')
 const buildOptions = require('minimist-options')
 const minimist = require('minimist')
-const { parse } = require('../dist/ast-node.js')
-const { fnkGenerator } = require('../dist/fnkGenerator.js')
+
+const { build } = require('../dist/ast-nodejs.js')
+const { fnkGenerator } = require('../libs/fnkGenerator.js')
 const { generate } = require('astring')
+
+const ramdaNames = keys(require('ramda'))
 
 const options = buildOptions({
     help: {
@@ -24,17 +27,14 @@ const options = buildOptions({
         type: 'boolean',
         alias: ['a']
     },
-    ramda: {
+    commonjs: {
         type: 'boolean',
-        default: true
+        alias: ['c'],
+        default: false
     },
     output: {
         type: 'string',
         alias: ['o']
-    },
-    implicit: {
-        type: 'string',
-        alias: ['i']
     },
     stopEarly: true
 })
@@ -47,7 +47,7 @@ if(!args._.length || args.help) {
     console.log('Usage:')
     console.log('npm run funkrit [options] <source>')
     console.log('  [-a, --ast]      : generate AST only')
-    console.log('  [-r, --require]  : import as require (for nodeJS)')
+    console.log('  [-c, --commonjs] : produce commonJS module')
     console.log('  [-o, --output]   : output path')
     console.log('  <source>         : path to funkrit source file (if equals to "-" then read from STDIN)')
     return
@@ -60,36 +60,38 @@ try {
 
     const es = !args.e ? [] : Array.isArray(args.e) ? args.e : [args.e]
 
-    const ast = parse(source)
+    const astResult = build({
+        code: source,
+        commonJs: true,
+        stdLib: {
+            source: 'ramda',
+            names: ramdaNames
+        }})
 
-    if(args.ast) {
-        if(args.output) {
-        } else {
-            console.log(JSON.stringify(ast, null, 2))
-        }
+    if(astResult.error) {
+        console.log("Error: " + astResult.error)
     } else {
-        const code = generate(ast, {comments: true, generator: fnkGenerator})
-        if(args.output) {
-            fs.writeFileSync(args.output, code)
+        const ast = astResult.value
+
+        if(args.ast) {
+            const astJson = JSON.stringify(ast, null, 2)
+            if(args.output) {
+                fs.writeFileSync(args.output, astJson)
+            } else {
+                console.log(astJson)
+            }
         } else {
-            console.log(code)
+            const code = generate(ast, {comments: true, generator: fnkGenerator})
+            if(args.output) {
+                fs.writeFileSync(args.output, code)
+            } else {
+                console.log(code)
+            }
         }
     }
 
 }
 catch(err) {
     console.log('Error:', err)
-}
-
-function resolvePath(p) {
-    return path.extname(p) == '' ? p + '.js' : p
-}
-
-function resolveEmbeddedLibPath(name) {
-    if(name.indexOf('/') > -1) {
-        return resolvePath(name)
-    } else {
-        return resolvePath('../libs/' + name) || resolvePath('./node_modules/funkrit/libs/' + name)
-    }
 }
 
