@@ -13,7 +13,7 @@ const buildOptions = require('minimist-options')
 const minimist = require('minimist')
 
 const { build } = require('../dist/ast-nodejs.js')
-const { fnkGenerator } = require('../libs/fnkGenerator.js')
+const { fnkGenerator } = require('../libjs/fnkGenerator.js')
 const { generate } = require('astring')
 
 const ramdaNames = keys(require('ramda'))

@@ -7,6 +7,7 @@
 <PROJECT_ROOT>/temp/
 <PROJECT_ROOT>/test/
 <PROJECT_ROOT>/examples/
+<PROJECT_ROOT>/grammar/
 <PROJECT_ROOT>/*.js
 
 [include]

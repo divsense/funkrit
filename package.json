@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Funkrit. Functional Programming Language",
   "main": "index.js",
+  "bin": {
+      "funkrit": "bin/funkrit.js"
+  },
   "scripts": {
     "test": "ava",
     "parse": "pegjs -o build/peg.js grammar/funkrit.pegjs",

@@ -24,49 +24,46 @@ dist: $(OBJS)
 
 # Libs
 build/io.js: io.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 build/result.js: result.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 build/required-identifiers.js: required-identifiers.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 build/commonjs.js: commonjs.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 # Parser
 build/peg-parser.js: funkrit.pegjs
 	./node_modules/.bin/pegjs -o $@ $<
 
 # Builder
-build/funkrit-node.js: webpack.config.js $(OBJS)
-	./node_modules/.bin/webpack --config $@
-
 build/ast-nodejs.js: ast-nodejs.fnk build/peg-parser.js
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 build/ast-types.js: ast-types.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 build/ast-travel.js: ast-travel.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 # Examples
 
 examples: $(EXAMPLES) build/peg-parser.js
 
 examples/build/monads.js: monads.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 examples/build/monads.ast: monads.fnk
-	node ./bin/funkrit-node.js --ast $< > $@
+	node ./bin/funkrit.js --ast $< > $@
 
 examples/build/types.js: types.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 examples/build/use-types.js: use-types.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 # Temp
 
@@ -75,10 +72,10 @@ temp: temp/test.ast
 play: temp/play.js temp/play.ast
 
 temp/play.js: temp/play.fnk
-	node ./bin/funkrit-node.js -o $@ $<
+	node ./bin/funkrit.js -o $@ $<
 
 temp/play.ast: temp/play.fnk
-	node ./bin/funkrit-node.js --ast -o $@ $<
+	node ./bin/funkrit.js --ast -o $@ $<
 
 temp/test.ast: temp/test.js
 	node node_modules/.bin/acorn --ecma2015 --module $< > $@
