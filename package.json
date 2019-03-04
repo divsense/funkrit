@@ -1,10 +1,10 @@
 {
   "name": "funkrit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Funkrit. Functional Programming Language",
   "main": "index.js",
   "bin": {
-      "funkrit": "bin/funkrit.js"
+    "funkrit": "bin/funkrit.js"
   },
   "scripts": {
     "test": "ava",
