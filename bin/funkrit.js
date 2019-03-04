@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 /**
- * @file             : bin/funkrit-node.js
+ * @file             : bin/funkrit.js
  * License           : MIT
  * @author           : Oleg Kirichenko <oleg@divsense.com>
  * Date              : 01.12.2018
- * Last Modified Date: 27.01.2019
+ * Last Modified Date: 03.03.2019
  * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
  */
 const { compose, append, keys, map, flatten } = require('ramda')

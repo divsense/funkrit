@@ -4,6 +4,8 @@ examples
 flow-libs-DELETE
 old-src
 temp
+Makefile
 webpack.*
 getall.sh
+index.js
 
