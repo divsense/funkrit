@@ -2,7 +2,8 @@ BUILDDIR := build
 OBJS := $(addprefix $(BUILDDIR)/, \
 	peg-parser.js \
 	io.js \
-	ast-nodejs.js \
+	ast-builder.js \
+	ast-sandbox.js \
 	ast-types.js \
 	ast-travel.js \
 	result.js \
@@ -40,7 +41,10 @@ build/peg-parser.js: funkrit.pegjs
 	./node_modules/.bin/pegjs -o $@ $<
 
 # Builder
-build/ast-nodejs.js: ast-nodejs.fnk build/peg-parser.js
+build/ast-builder.js: ast-builder.fnk build/peg-parser.js
+	node ./bin/funkrit.js -o $@ $<
+
+build/ast-sandbox.js: ast-sandbox.fnk
 	node ./bin/funkrit.js -o $@ $<
 
 build/ast-types.js: ast-types.fnk

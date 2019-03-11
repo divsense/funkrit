@@ -46,7 +46,7 @@ const args = minimist(process.argv.slice(2), options)
 
 if(!args._.length || args.help) {
     console.log('Usage:')
-    console.log('npm run funkrit [options] <source>')
+    console.log('npm run funkrit -- [options] <source>')
     console.log('  [-a, --ast]      : generate AST only')
     console.log('  [-c, --commonjs] : produce commonJS module')
     console.log('  [-o, --output]   : output path')

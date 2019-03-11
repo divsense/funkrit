@@ -1,5 +1,5 @@
 Node := AssignmentExpression | ArrayExpression | ArrayPattern | ArrowFunctionExpression | BinaryExpression | BlockStatement | BreakStatement | CallExpression | ConditionalExpression | EmptyStatement | ExpressionStatement | FunctionDeclaration | FunctionExpression | Identifier | IfStatement | ImportDeclaration | ImportSpecifier | Literal | LogicalExpression | MemberExpression | ObjectExpression | ObjectPattern | Program | ReturnStatement | SpreadElement | SwitchCase | SwitchStatement | UnaryExpression | VariableDeclaration | VariableDeclarator | ExportNamedDeclaration | ExportSpecifier | Property | AssignmentPattern
-Statement := BlockStatement | BreakStatement | IfStatement | EmptyStatement | ExpressionStatement | ReturnStatement | SwitchStatement
+Statement := BlockStatement | BreakStatement | IfStatement | EmptyStatement | ExpressionStatement | ReturnStatement | SwitchStatement | ImportDeclaration
 Expression := ObjectExpression | AssignmentExpression | ArrayExpression | ArrowFunctionExpression | BinaryExpression | CallExpression | ConditionalExpression | Identifier
 Pattern := ArrayPattern | Identifier | ObjectPattern | MemberExpression | AssignmentPattern
 
