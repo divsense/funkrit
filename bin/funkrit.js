@@ -1,23 +1,11 @@
 #!/usr/bin/env node
-/**
- * @file             : bin/funkrit.js
- * License           : MIT
- * @author           : Oleg Kirichenko <oleg@divsense.com>
- * Date              : 01.12.2018
- * Last Modified Date: 03.03.2019
- * Last Modified By  : Oleg Kirichenko <oleg@divsense.com>
- */
-const { compose, append, keys, map, flatten } = require('ramda')
 const fs = require('fs')
 const path = require('path')
 const buildOptions = require('minimist-options')
 const minimist = require('minimist')
 
-const { build } = require('../dist/ast-nodejs.js')
-const { fnkGenerator } = require('../libjs/fnkGenerator.js')
+const { parse } = require("../build/funkrit-parser");
 const { generate } = require('astring')
-
-const ramdaNames = keys(require('ramda'))
 
 const options = buildOptions({
     help: {
@@ -42,8 +30,6 @@ const options = buildOptions({
 
 const args = minimist(process.argv.slice(2), options)
 
-//console.log(args)
-
 if(!args._.length || args.help) {
     console.log('Usage:')
     console.log('npm run funkrit -- [options] <source>')
@@ -61,33 +47,21 @@ try {
 
     const es = !args.e ? [] : Array.isArray(args.e) ? args.e : [args.e]
 
-    const astResult = build({
-        code: source,
-        commonJs: true,
-        stdLib: {
-            source: 'ramda',
-            names: ramdaNames
-        }})
+    const ast = parse(source)
 
-    if(astResult.error) {
-        console.log("Error: " + astResult.error)
-    } else {
-        const ast = astResult.value
-
-        if(args.ast) {
-            const astJson = JSON.stringify(ast, null, 2)
-            if(args.output) {
-                fs.writeFileSync(args.output, astJson)
-            } else {
-                console.log(astJson)
-            }
+    if(args.ast) {
+        const astJson = JSON.stringify(ast, null, 2)
+        if(args.output) {
+            fs.writeFileSync(args.output, astJson)
         } else {
-            const code = generate(ast, {comments: true, generator: fnkGenerator})
-            if(args.output) {
-                fs.writeFileSync(args.output, code)
-            } else {
-                console.log(code)
-            }
+            console.log(astJson)
+        }
+    } else {
+        const code = generate(ast, { ecmaVersion: 6 })
+        if(args.output) {
+            fs.writeFileSync(args.output, code)
+        } else {
+            console.log(code)
         }
     }
 

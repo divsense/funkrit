@@ -1,3 +1,6 @@
+import { todo, modo } from ('mart::oleg/todo', '1234556')
+
+
 { Node, Program, Statement, ImportDeclaration, ImportSpecifier } <: "./ast-types"
 { Settings, StdLib } <: './ast-builder'
 { Result_Monad } <: './result' 
