@@ -185,8 +185,6 @@ Statement
   = FunctionDeclarationStatement
   / DeclarationStatement
   / Block
-  / EmptyStatement
-  / ExpressionStatement
   / IfStatement
   / BreakStatement
   / SwitchStatement
@@ -204,9 +202,6 @@ StatementList
   = head:Statement tail:(__ Statement)* {
       return buildList(head, tail, 1);
 }
-
-EmptyStatement
-  = ";" { return { type: "EmptyStatement" }; }
 
 FunctionDeclarationStatement
   = id:Identifier __ "=" __ params:FunctionParameters __ ArrowToken __ body:FunctionBody {
@@ -235,14 +230,6 @@ Declaration
         type: "VariableDeclarator",
         id: id,
         init: init
-      };
-    }
-
-ExpressionStatement
-  = !("{" / ArrowToken) expression:SingleExpression EOS {
-      return {
-        type: "ExpressionStatement",
-        expression: expression
       };
     }
 
@@ -382,11 +369,10 @@ ImportSource
   / StringLiteral
 
 SingleExpression
-    = MemberExpression
+    = ConditionalExpression
     / SetObjectExpression
     / TestRegexExpression
     / MatchRegexExpression
-    / ConditionalExpression
 
 ConditionalExpression
     = test:FunctionCompositionExpression __
@@ -486,6 +472,7 @@ MultiplicativeOperator
 
 UnaryExpression
   = CallExpression
+  / MemberExpression
   / LensExpression
   / PrimaryExpression
   / operator:UnaryOperator __ argument:UnaryExpression {
@@ -538,7 +525,7 @@ SpreadElement
     }
 
 CalleeExpression
-    = LensExpression
+    = MemberExpression
     / ParenExpression
     / Identifier
 
@@ -622,7 +609,7 @@ Elision
   = "," commas:(__ ",")* { return filledArray(commas.length + 1, null); }
 
 HashArrayLiteral
-  = "@[" __ nobs:NobDeclarationList __ "]" {
+  = "<[" __ nobs:NobDeclarationList __ "]>" {
        return { type: "ArrayExpression", elements: nobs };
      }
 
@@ -770,8 +757,6 @@ MemberExpression
     }
   / head: Identifier property: LensExpression {
         return {
-          type: "ExpressionStatement",
-          expression: {
             type: "CallExpression",
             callee: {
                 type: "Identifier",
@@ -781,8 +766,7 @@ MemberExpression
                 property,
                 head
             ]
-          }
-        };
+        }
     }
 
 SetObjectExpression
